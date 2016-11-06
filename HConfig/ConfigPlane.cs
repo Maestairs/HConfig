@@ -78,24 +78,30 @@ namespace HConfig
         }
 
         
-        public void UpsertConfigValue(string key, string value)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool TryGetConfigValue(string key, out string value)
-        {
-            return TryGetConfigValue(Context, key, out value);
-        }
-
-        public string GetConfigValue(string key)
-        {
-            return GetConfigValue(Context, key);
-        }
+      
 
         public void UpsertConfigValue(string spokeName, string key, string value)
         {
-            throw new NotImplementedException();
+            IConfigSpoke spoke;
+            VerifyContext(spokeName);
+            if (TryGetSpoke(spokeName, out spoke))
+            {
+                spoke.UpsertConfigValue(key,value);
+            }
+            else
+            {
+                SaveToNewSpoke(spokeName, key, value);
+            }
+        }
+        public void UpsertConfigValue(string key, string value)
+        {
+             UpsertConfigValue(Context,key,value);
+        }
+        private void SaveToNewSpoke(string spokeName, string key, string value)
+        {
+            IConfigSpoke spoke = new ConfigSpoke(PlaneDescriptor.Key, spokeName);
+            spoke.UpsertConfigValue(key, value);
+            _spokes.Add(spokeName, spoke);
         }
 
         public bool TryGetConfigValue(string spokeName, string key, out string value)
@@ -112,6 +118,11 @@ namespace HConfig
             return (_defaultValues.TryGetValue(key, out value));
         }
 
+        public bool TryGetConfigValue(string key, out string value)
+        {
+            return TryGetConfigValue(Context, key, out value);
+        }
+
         public string GetConfigValue(string spokeName, string key)
         {
             VerifyContext(spokeName);
@@ -125,6 +136,12 @@ namespace HConfig
 
             return _defaultValues.FirstOrDefault(d => d.Key.Equals(key, StringComparison.InvariantCulture)).Value;
         }
+
+        public string GetConfigValue(string key)
+        {
+            return GetConfigValue(Context, key);
+        }
+
 
         private void VerifyContext(string context)
         {
