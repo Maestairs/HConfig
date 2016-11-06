@@ -16,7 +16,7 @@ namespace HConfigTests
             ConfigSpoke sut= new ConfigSpoke("Key","Value");
             var keyValuePair = new KeyValuePair<string, string>("newkey","Value");
             Assert.That(
-                            ()=>sut.LevelDescriptor=keyValuePair,
+                            ()=>sut.PlaneDescriptor=keyValuePair,
                             Throws.Exception
                         );
         }
@@ -27,7 +27,7 @@ namespace HConfigTests
             ConfigSpoke sut = new ConfigSpoke("Key", "Value");
             var keyValuePair = new KeyValuePair<string, string>("Key", "newValue");
             Assert.That(
-                            () => sut.LevelDescriptor = keyValuePair,
+                            () => sut.PlaneDescriptor = keyValuePair,
                             Throws.Exception
                         );
         }

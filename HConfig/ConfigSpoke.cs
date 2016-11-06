@@ -21,7 +21,7 @@ namespace HConfig
 
         }
 
-        public KeyValuePair<string, string> LevelDescriptor
+        public KeyValuePair<string, string> PlaneDescriptor
         {
             get
             {
