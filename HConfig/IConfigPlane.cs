@@ -11,19 +11,29 @@ namespace HConfig
     public interface IConfigPlane 
     {
         KeyValuePair<string, string> PlaneDescriptor { get; set; }  //Although it uses a PlaneDescriptor , the value is an empty string (No spoke can have an empty value)
+        #region Spoke Manipulation 
+        void UpsertSpoke(IConfigSpoke configSpoke);
+        IConfigSpoke GetSpoke(string spokeName);
+        bool TryGetSpoke(string spokeName, out IConfigSpoke spoke);
+        #endregion
 
-        void UpsertConfigSpoke(IConfigSpoke configSpoke);
-        IConfigSpoke GetConfigSpoke(string spokeName);
-        bool TryGetConfigSpoke(string spokeName, out IConfigSpoke spoke);
+        string Context { get; set; } //This is the spoke name that will be used for this plane unless explicitly overridden
 
-        void SetContext(string spokeName);  //This is the spoke name that will be used for this plane unless explicitly overridden
-
+        #region Save Config Items 
         void UpsertConfigValue(string key, string value);
+        void UpsertDefaultConfigValue(string key, string value);    // Store a default Value 
+        #endregion
+        #region Read Config Items
+
         bool TryGetConfigValue(string key, out string value);
         string GetConfigValue(string key);
 
-        void UpsertConfigValue(string spokeName , string key, string value);
-        bool TryGetConfigValue(string spokeName , string key, out string value);
-        string GetConfigValue(string spokeName , string key);
+       
+        bool TryGetConfigValue(string context, string key, out string value);
+        string GetConfigValue(string context, string key);
+
+        #endregion
+
+
     }
 }
