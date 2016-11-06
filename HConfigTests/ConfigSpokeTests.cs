@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using HConfig;
 using NUnit.Framework;
-
+using NUnit.Util;
 
 
 namespace HConfigTests
@@ -30,6 +30,39 @@ namespace HConfigTests
                             () => sut.PlaneDescriptor = keyValuePair,
                             Throws.Exception
                         );
+        }
+
+        [Test]
+        public void SettingNullDescriptorKey_ThrowsException()
+        {
+            ConfigSpoke  sut = new ConfigSpoke("","");
+            Assert.That(()=>sut.PlaneDescriptor = new KeyValuePair<string, string>(null,"ss"),Throws.Exception);
+        }
+        [Test]
+        public void SettingEmptyDescriptorKey_ThrowsException()
+        {
+            ConfigSpoke sut = new ConfigSpoke("", "");
+            Assert.That(() => sut.PlaneDescriptor = new KeyValuePair<string, string>("", "ss"), Throws.Exception);
+        }
+        [Test]
+        public void SettingNullDescriptorValue_ThrowsException()
+        {
+            ConfigSpoke sut = new ConfigSpoke("", "");
+            Assert.That(() => sut.PlaneDescriptor = new KeyValuePair<string, string>("ss", null), Throws.Exception);
+        }
+        [Test]
+        public void SettingEmptyDescriptorValue_ThrowsException()
+        {
+            ConfigSpoke sut = new ConfigSpoke("", "");
+            Assert.That(() => sut.PlaneDescriptor = new KeyValuePair<string, string>("ss", ""), Throws.Exception);
+        }
+        [Test]
+        public void SettingValidDescriptorValue_ValueIsStored()
+        {
+            ConfigSpoke sut = new ConfigSpoke("", "");
+            sut.PlaneDescriptor = new KeyValuePair<string, string>("PlaneName", "SpokeName");
+            Assert.That(sut.PlaneDescriptor.Key.Equals("PlaneName", StringComparison.InvariantCulture));
+            Assert.That(sut.PlaneDescriptor.Value.Equals("SpokeName", StringComparison.InvariantCulture));
         }
 
         [Test]

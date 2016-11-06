@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HConfig
 {
@@ -143,11 +141,11 @@ namespace HConfig
         }
 
 
+        // ReSharper disable once UnusedParameter.Local
         private void VerifyContext(string context)
         {
             if (context == null || context.Equals(string.Empty, StringComparison.InvariantCulture))
                 throw new ArgumentException("Invalid Spoke Name Context: null or empty");
-
         }
 
         public void UpsertDefaultConfigValue(string key, string value)

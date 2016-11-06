@@ -26,6 +26,27 @@ namespace HConfigTests
             ConfigPlane sut = new ConfigPlane("FirstName");
             Assert.That(sut.PlaneDescriptor.Value==string.Empty);
         }
+        [Test]
+        public void ExpectExceptionWhenSettingEmptyDescriptorKey()
+        {
+            var sut = new ConfigPlane("");
+            Assert.That(() =>sut.PlaneDescriptor = new KeyValuePair<string, string>("",""), Throws.Exception);
+        }
+        [Test]
+        public void NewDescriptorIsStoredWhenSpecified()
+        {
+            var sut = new ConfigPlane("");
+            sut.PlaneDescriptor = new KeyValuePair<string, string>("MyPlaneDescriptorKey","SomeValueThatIsIgnored");
+            Assert.That(sut.PlaneDescriptor.Key.Equals("MyPlaneDescriptorKey", StringComparison.InvariantCulture));
+            Assert.That(sut.PlaneDescriptor.Value.Equals(String.Empty, StringComparison.InvariantCulture));
+        }
+
+        [Test]
+        public void ExpectExceptionWhenSettingNullDescriptorKey()
+        {
+            var sut = new ConfigPlane("");
+            Assert.That(() => sut.PlaneDescriptor = new KeyValuePair<string, string>(null, ""), Throws.Exception);
+        }
 
         [Test]
         public void AddingNewSpoke_NewSpokeStored()
@@ -250,111 +271,77 @@ namespace HConfigTests
             Assert.IsNotNull(configValue);
             Assert.That(configValue.Equals("spoke1Value", StringComparison.InvariantCulture));
         }
-        /*
+        [Test]
+        public void GetValue_UsesDefaultIfNotFoundOnSpoke()
+        {
+            ConfigPlane sut = new ConfigPlane("PlaneName");
+            ConfigSpoke spoke1 = new ConfigSpoke("PlaneName", "SpokeName1");
+            spoke1.UpsertConfigValue("TestConfig", "spoke1Value");
+            sut.UpsertSpoke(spoke1);
+
+            sut.UpsertDefaultConfigValue("SomeKey","SomeValue");
+             
+            var configValue = sut.GetConfigValue("SpokeName1","SomeKey");
+
+            Assert.IsNotNull(configValue);
+            Assert.That(configValue.Equals("SomeValue", StringComparison.InvariantCulture));
+        }
+        [Test]
+        public void GetValue_UsesContextIfNoSpokeNameprovided()
+        {
+            string configValue;
+
+            ConfigPlane sut = new ConfigPlane("PlaneName");
+            ConfigSpoke spoke1 = new ConfigSpoke("PlaneName", "SpokeName1");
+            spoke1.UpsertConfigValue("TestConfig", "spoke1Value");
+            sut.UpsertSpoke(spoke1);
+
+            sut.UpsertDefaultConfigValue("SomeKey", "SomeValue");
+            sut.Context = "SpokeName1";
+            configValue = sut.GetConfigValue("TestConfig");
+
+            Assert.IsNotNull(configValue);
+            Assert.That(configValue.Equals("spoke1Value", StringComparison.InvariantCulture));
+        }
+
         [Test]
         public void UpsertingConfigValue_WhereNoSpokeExists_OneIsCreatedAndConfigStoredOnTheNewSpoke()
         {
+            string configValue;
+
+            ConfigPlane sut = new ConfigPlane("PlaneName");
+            
+            sut.UpsertConfigValue("MyNewSpoke","MyKey","MyValue");
+
+
+            configValue = sut.GetConfigValue("MyNewSpoke", "MyKey");
+            Assert.IsNotNull(sut.GetSpoke("MyNewSpoke"));
+            Assert.IsNotNull(configValue);
+            Assert.That(configValue.Equals("MyValue", StringComparison.InvariantCulture));
         }
+         
         [Test]
         public void UpsertingConfigValue_WhereNoContextSpokeExists_OneIsCreatedAndConfigStoredOnTheNewSpoke()
         {
+            string configValue;
+
+            ConfigPlane sut = new ConfigPlane("PlaneName");
+            sut.Context = "MyNewSpoke";
+            sut.UpsertConfigValue( "MyKey", "MyValue");
+
+
+            configValue = sut.GetConfigValue("MyNewSpoke", "MyKey");
+            Assert.IsNotNull(sut.GetSpoke("MyNewSpoke"));
+            Assert.IsNotNull(configValue);
+            Assert.That(configValue.Equals("MyValue", StringComparison.InvariantCulture));
         }
+         
         [Test]
         public void UsingInvalidContext_CausesException()
         {
+            ConfigPlane sut = new ConfigPlane("PlaneName");
+           
+            Assert.That(()=>sut.UpsertConfigValue("MyKey", "MyValue"),Throws.ArgumentException);
         }
-        [Test]
-        public void UpsertConfigValue_WritesToCorrectSpoke()
-        {
-            
-        }
-        [Test]
-        public void UpsertConfigValue_WritesToCorrectSpokeWhenUsingContext()
-        {
-
-        }
-        
-        [Test]
-        public void GetValue_FallsBackToHubIfNoValueOnSpoke()
-        {
-            throw new NotImplementedException();
-        }
-        [Test]
-        public void GetValue_UsingContextUsesCorrectSpokeForValue()
-        {
-            throw new NotImplementedException();
-        }
-        [Test]
-        public void GetValue_UsingContextFallsBackToHubIfNoValueOnSpoke()
-        {
-            throw new NotImplementedException();
-        }
-
-        [Test]
-        public void GetValue_UsingContextThrowsExceptionIfNoContextSet()
-        {
-            throw new NotImplementedException();
-        }
-        [Test]
-        public void TryGetValue_UsingContextThrowsExceptionIfNoContextSet()
-        {
-            throw new NotImplementedException();
-        }
-
-
-
-        [Test]
-        public void UpsertingNewNameAndValue_CausesValueToBeStored()
-        {
-            throw new NotImplementedException();
-        }
-        [Test]
-        public void UpsertingExistingNameAndValue_CausesValueToBeStored()
-        {
-            throw new NotImplementedException();
-
-        }
-
-        [Test]
-        public void TryGetValue_ReturnsFalseIfNoFound()
-        {
-            throw new NotImplementedException();
-        }
-
-        [Test]
-        public void TryGetValue_ReturnsTrueIfFound()
-        {
-            throw new NotImplementedException();
-        }
-
-        [Test]
-        public void TryGetValue_SetsValueIfFound()
-        {
-            throw new NotImplementedException();
-        }
-        [Test]
-        public void TryGetValue_ReturnsCorrectValueWhenMultiopleEntries()
-        {
-            throw new NotImplementedException();
-        }
-
-
-        [Test]
-        public void GetValue_ReturnsNullIfNotFound()
-        {
-            throw new NotImplementedException();
-        }
-
-        [Test]
-        public void GetValue_ReturnsValueIfFound()
-        {
-            throw new NotImplementedException();
-        }
-        [Test]
-        public void GetValue_ReturnsCorrectValueWhenMultiopleEntries()
-        {
-            throw new NotImplementedException();
-        }
-        */
     }
 }
