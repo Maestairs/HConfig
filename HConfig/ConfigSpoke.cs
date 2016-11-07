@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace HConfig
 {
-    public class ConfigSpoke : IConfigSpoke
+    internal class ConfigSpoke : IConfigSpoke
     {
         private Dictionary<string, string> _configValues;
         private KeyValuePair<string, string> _levelDescriptor;

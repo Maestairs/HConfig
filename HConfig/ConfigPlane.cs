@@ -4,7 +4,13 @@ using System.Linq;
 
 namespace HConfig
 {
-    public class ConfigPlane :  IConfigPlane
+    /// <summary>
+    /// A ConfigPlane can hold config values either in its default values or in the spokes 
+    /// Which are overrides for a specific instance. Values are overriden on a key by key basis
+    /// So for a given key the ConfigPlane first looks in the spoke for the given context
+    /// if none found there it looks in its default values
+    /// </summary>
+    internal class ConfigPlane :  IConfigPlane
     {
         private KeyValuePair<string, string> _planeDescriptor;
         private Dictionary<string, IConfigSpoke> _spokes;
@@ -75,9 +81,6 @@ namespace HConfig
             return (_spokes.TryGetValue(spokeName, out spoke));
         }
 
-        
-      
-
         public void UpsertConfigValue(string spokeName, string key, string value)
         {
             IConfigSpoke spoke;
@@ -139,19 +142,18 @@ namespace HConfig
         {
             return GetConfigValue(Context, key);
         }
-
+        
+        public void UpsertDefaultConfigValue(string key, string value)
+        {
+            _defaultValues.Remove(key);
+            _defaultValues.Add(key,value);
+        }
 
         // ReSharper disable once UnusedParameter.Local
         private void VerifyContext(string context)
         {
             if (context == null || context.Equals(string.Empty, StringComparison.InvariantCulture))
                 throw new ArgumentException("Invalid Spoke Name Context: null or empty");
-        }
-
-        public void UpsertDefaultConfigValue(string key, string value)
-        {
-            _defaultValues.Remove(key);
-            _defaultValues.Add(key,value);
         }
     }
 }

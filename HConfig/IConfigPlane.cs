@@ -4,9 +4,9 @@ namespace HConfig
 {
     // A config plane contains all the config spokes . It can hold its own values Which are the default values for the plane
 
-    public interface IConfigPlane 
+    internal interface IConfigPlane 
     {
-        KeyValuePair<string, string> PlaneDescriptor { get; set; }  //Although it uses a PlaneDescriptor , the value is an empty string (No spoke can have an empty value)
+        KeyValuePair<string, string> PlaneDescriptor { get; set; }  //Although it uses a PlaneDescriptor , the value is an empty string 
         #region Spoke Manipulation 
         void UpsertSpoke(IConfigSpoke configSpoke);
         IConfigSpoke GetSpoke(string spokeName);
@@ -18,6 +18,8 @@ namespace HConfig
         #region Save Config Items 
         void UpsertConfigValue(string key, string value);
         void UpsertDefaultConfigValue(string key, string value);    // Store a default Value 
+        void UpsertConfigValue(string context , string key, string value);
+        
         #endregion
         #region Read Config Items
 

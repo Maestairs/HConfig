@@ -71,8 +71,10 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="ConfigControllerTests.cs" />
     <Compile Include="ConfigPlaneTests.cs" />
     <Compile Include="ConfigSpokeTests.cs" />
+    <Compile Include="ControlledConfigPlaneTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
