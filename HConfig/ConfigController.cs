@@ -1,34 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 [assembly: InternalsVisibleTo("HConfigTests")]  //Allow tests to run against internal code 
+[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]  //Allow RhinoMocks to mock internal types
 
 namespace HConfig
 {
     public class ConfigController : IConfigController
     {
         private readonly Dictionary<string,IControlledConfigPlane> _planes;
-        private List<string> _priorities;
-        IControlledConfigPlane _entryPoint;  //Set to the highest priority plane
+        private Queue<string> _priority;
+
+        // ReSharper disable once InconsistentNaming
+        internal  IControlledConfigPlane _entryPoint;  //Set to the highest priority plane
         private Dictionary<string, string> _context; 
        
         public  ConfigController()
         {
             _planes = new Dictionary<string, IControlledConfigPlane>();
-
         }
 
-        public List<string> Priorities
+        public Queue<string> Priority
         {
-            get { return (_priorities); }
+            get { return (_priority); }
 
             set
             {
-                _priorities = value;
+                _priority = value;
 
                 PrioritisePlanes();
             }
@@ -47,32 +46,30 @@ namespace HConfig
 
         public void SetContext(Dictionary<string, string> context)
         {
-            if (context != null)
+            if (context == null) return;
+            foreach (var plane in context)
             {
-                foreach (var plane in context)
+                IControlledConfigPlane configPlane;
+                if (_planes.TryGetValue(plane.Key, out configPlane))
                 {
-                    IControlledConfigPlane configPlane;
-                    if (_planes.TryGetValue(plane.Key, out configPlane))
-                    {
-                        configPlane.Plane.Context = plane.Value;
-                    }
-                    // Dont throw exception if no plane found as context may be set 
-                    // before planes are created
+                    configPlane.Context = plane.Value;
                 }
+                // Dont throw exception if no plane found as context may be set 
+                // before planes are created
             }
         }
 
         public void UpsertConfigValue(string planeName,string spokeName, string key, string value)
         {
             IControlledConfigPlane configPlane = GetOrCreateConfigPlane(planeName);
-            configPlane.Plane.UpsertConfigValue(spokeName,key,value);
+            configPlane.UpsertConfigValue(spokeName,key,value);
                 
         }
 
         public void UpsertDefaultConfigValue(string planeName, string key, string value)
         {
             IControlledConfigPlane configPlane = GetOrCreateConfigPlane(planeName);
-            configPlane.Plane.UpsertDefaultConfigValue( key, value);
+            configPlane.UpsertDefaultConfigValue( key, value);
         }
 
         public bool TryGetConfigValue(string key, out string value)
@@ -85,6 +82,11 @@ namespace HConfig
         {
             ValidateContextAndPriorities();
             return _entryPoint.GetConfigValue(key);
+        }
+
+        public ConfigKeyReport GetConfigKeyReport(string key)
+        {
+            throw new NotImplementedException();
         }
 
         private IControlledConfigPlane GetOrCreateConfigPlane(string planeName)
@@ -103,7 +105,7 @@ namespace HConfig
         // NB Priority might mention planes that dont exist 
         private void PrioritisePlanes()
         {
-            if (Priorities != null)
+            if (Priority != null)
             {
                 IControlledConfigPlane previousPlane=null;
 
@@ -111,7 +113,7 @@ namespace HConfig
                     plane.Value.Child = null;
                
 
-                foreach (var priority in Priorities)
+                foreach (var priority in Priority)
                 {
                     IControlledConfigPlane currentPlane;
 
@@ -147,7 +149,7 @@ namespace HConfig
         private void ValidateContextAndPriorities()
         {
             if (Context == null) throw new ApplicationException("Attempt to ReadConfig With No Context Set");
-            if (Priorities == null) throw new ArgumentException("Attempt to ReadConfig With No Priorities Set");
+            if (Priority == null) throw new ArgumentException("Attempt to ReadConfig With No Priorities Set");
         }
 
 

@@ -105,7 +105,12 @@ namespace HConfig
             _spokes.Add(spokeName, spoke);
         }
 
-        public bool TryGetConfigValue(string spokeName, string key, out string value)
+        public virtual bool TryGetConfigValue(string key, out string value)
+        {
+            return TryGetConfigValue(Context, key, out value);
+        }
+
+        public virtual bool TryGetConfigValue(string spokeName, string key, out string value)
         {
             string configValue;
             IConfigSpoke spoke;
@@ -119,12 +124,7 @@ namespace HConfig
             return (_defaultValues.TryGetValue(key, out value));
         }
 
-        public bool TryGetConfigValue(string key, out string value)
-        {
-            return TryGetConfigValue(Context, key, out value);
-        }
-
-        public string GetConfigValue(string spokeName, string key)
+        public virtual string GetConfigValue(string spokeName, string key)
         {
             VerifyContext(spokeName);
             IConfigSpoke spoke;
@@ -138,7 +138,7 @@ namespace HConfig
             return _defaultValues.FirstOrDefault(d => d.Key.Equals(key, StringComparison.InvariantCulture)).Value;
         }
 
-        public string GetConfigValue(string key)
+        public virtual string GetConfigValue(string key)
         {
             return GetConfigValue(Context, key);
         }
@@ -154,6 +154,32 @@ namespace HConfig
         {
             if (context == null || context.Equals(string.Empty, StringComparison.InvariantCulture))
                 throw new ArgumentException("Invalid Spoke Name Context: null or empty");
+        }
+
+        public virtual  ConfigKeyReport GetConfigKeyReport(string key)
+        {
+            string configValue = GetConfigValue(key);
+            if (configValue == null) return null;
+            ConfigKeyReport retVal = new ConfigKeyReport
+            {
+                Key = key,
+                Value = configValue
+            };
+            string spokeName;
+            retVal.ValueFoundOnSpoke = WasValueFromContextSpecifiedSpoke(key,out spokeName);
+            retVal.PlaneName = PlaneDescriptor.Key;
+            retVal.SpokeName = spokeName;
+
+            return (retVal);
+        }
+
+        private bool WasValueFromContextSpecifiedSpoke(string key, out string spokeName)
+        {
+            IConfigSpoke spoke;
+            spokeName = null;
+            if (!TryGetSpoke(Context, out spoke)) return false;
+            spokeName = spoke.PlaneDescriptor.Value;
+            return spoke.GetConfigValue(key) != null;
         }
     }
 }

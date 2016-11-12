@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace HConfig
 {
@@ -24,11 +19,15 @@ namespace HConfig
         void UpsertDefaultConfigValue(string planeName, string key, string value);
         #endregion
 
-        Dictionary<string,string> Context { get; set; } 
+        Dictionary<string,string> Context { get; set; } // The current context used to in each plane 
 
-        List<string> Priorities { get; set; }  //The order in which planes are to be searched
+        
+        Queue<string> Priority { get; set; }           // The order in which planes are to be searched
+
+
         /// Todo Report Macro State
-        /// Todo Report StateOfEach Key
-     
+
+        ConfigKeyReport GetConfigKeyReport(string key);     // Reports on where a specific config was found
+
     }
 }

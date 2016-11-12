@@ -32,6 +32,12 @@ namespace HConfig
 
         #endregion
 
+        #region Reporting
+
+        ConfigKeyReport GetConfigKeyReport(string key);
+
+        #endregion
+
 
     }
 }

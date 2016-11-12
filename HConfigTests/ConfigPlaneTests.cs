@@ -335,7 +335,68 @@ namespace HConfigTests
             Assert.IsNotNull(configValue);
             Assert.That(configValue.Equals("MyValue", StringComparison.InvariantCulture));
         }
-         
+
+        [Test]
+        public void GetConfigKeyReport_ReturnsNullForUnknownKey()
+        {
+             
+
+            ConfigPlane sut = new ConfigPlane("PlaneName");
+            ConfigSpoke spoke1 = new ConfigSpoke("PlaneName", "SpokeName1");
+            spoke1.UpsertConfigValue("TestConfig", "spoke1Value");
+            sut.UpsertSpoke(spoke1);
+
+            sut.UpsertDefaultConfigValue("SomeKey", "SomeValue");
+            sut.Context = "SpokeName1";
+            var configKeyReport = sut.GetConfigKeyReport("UnknownTestConfig");
+
+            Assert.IsNull(configKeyReport);
+           
+        }
+        [Test]
+        public void GetConfigKeyReport_ReturnsCorrectValuesForAConfigOnASpoke()
+        {
+            throw new NotImplementedException();
+        }
+        [Test]
+        public void GetConfigKeyReport_ReturnsCorrectValuesForADefaultConfig()
+        {
+            throw new NotImplementedException();
+        }
+        [Test]
+        public void GetConfigKeyReport_ReturnsCorrectConfigPlaneName()
+        {
+            throw new NotImplementedException();
+        }
+        [Test]
+        public void GetConfigKeyReport_ReturnsCorrectConfigKeyName()
+        {
+            throw new NotImplementedException();
+        }
+        [Test]
+        public void GetConfigKeyReport_ReturnsCorrectConfigValue()
+        {
+            throw new NotImplementedException();
+        }
+        [Test]
+        public void GetConfigKeyReport_ReturnsCorrectSpokeName()
+        {
+            throw new NotImplementedException();
+        }
+        [Test]
+        public void GetConfigKeyReport_SetsValueFoundOnSpokeCorrectly()
+        {
+            throw new NotImplementedException();
+        }
+        [Test]
+        public void GetConfigKeyReport_SetsValueFoundInDefaultCorrectly()
+        {
+            throw new NotImplementedException();
+        }
+
+
+
+
         [Test]
         public void UsingInvalidContext_CausesException()
         {
