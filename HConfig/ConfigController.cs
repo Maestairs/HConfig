@@ -14,11 +14,16 @@ namespace HConfig
 
         // ReSharper disable once InconsistentNaming
         internal  IControlledConfigPlane _entryPoint;  //Set to the highest priority plane
-        private Dictionary<string, string> _context; 
+        private Dictionary<string, string> _context;
+        private List<string> _knownConfigKeys;          // maintain a list of known keys for reporting purposes 
        
+
+
+
         public  ConfigController()
         {
             _planes = new Dictionary<string, IControlledConfigPlane>();
+            _knownConfigKeys = new List<string>();
         }
 
         public Queue<string> Priority
@@ -61,6 +66,7 @@ namespace HConfig
 
         public void UpsertConfigValue(string planeName,string spokeName, string key, string value)
         {
+            ValidateKeyRegistraion(key);
             IControlledConfigPlane configPlane = GetOrCreateConfigPlane(planeName);
             configPlane.UpsertConfigValue(spokeName,key,value);
                 
@@ -68,6 +74,7 @@ namespace HConfig
 
         public void UpsertDefaultConfigValue(string planeName, string key, string value)
         {
+            ValidateKeyRegistraion(key);
             IControlledConfigPlane configPlane = GetOrCreateConfigPlane(planeName);
             configPlane.UpsertDefaultConfigValue( key, value);
         }
@@ -87,6 +94,13 @@ namespace HConfig
         public ConfigKeyReport GetConfigKeyReport(string key)
         {
             throw new NotImplementedException();
+        }
+
+        // Keep a track of known keys for reporting purposes
+        private void ValidateKeyRegistraion(string key)
+        {
+            if(!_knownConfigKeys.Contains(key))
+                _knownConfigKeys.Add(key);
         }
 
         private IControlledConfigPlane GetOrCreateConfigPlane(string planeName)

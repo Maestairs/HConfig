@@ -251,6 +251,24 @@ namespace HConfigTests
             throw new NotImplementedException();
         }
 
+        [Test]
+        public void AddingAConfigValue_KeyAddedToKnownKeys()
+        {
+
+            throw new NotImplementedException();
+        }
+        [Test]
+        public void AddingAknownConfigValue_KeyNotAddedToKnownKeys()
+        {
+            throw new NotImplementedException();
+
+        }
+
+        [Test]
+        public void GetConfigKeyReports_ReturnsValidListOfContextKeyReports()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     internal class ConfigControllerTestHelper : ConfigController
