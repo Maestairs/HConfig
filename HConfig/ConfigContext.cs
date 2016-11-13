@@ -4,12 +4,12 @@ using System.Linq;
 
 namespace HConfig
 {
-    internal class ConfigSpoke : IConfigSpoke
+    internal class ConfigContext : IConfigContext
     {
         private Dictionary<string, string> _configValues;
         private KeyValuePair<string, string> _levelDescriptor;
 
-        public ConfigSpoke(string key , string value)
+        public ConfigContext(string key , string value)
         {
             Init(key , value);
         }

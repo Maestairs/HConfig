@@ -2,18 +2,17 @@
 using System.Collections.Generic;
 using HConfig;
 using NUnit.Framework;
-using NUnit.Util;
 
 
 namespace HConfigTests
 {
     [TestFixture]
-    public class ConfigSpokeTests
+    public class ConfigContextTests
     {
         [Test]
         public void ChangingLevelNameAfterSetting_CausesException()
         {
-            ConfigSpoke sut= new ConfigSpoke("Key","Value");
+            ConfigContext sut= new ConfigContext("Key","Value");
             var keyValuePair = new KeyValuePair<string, string>("newkey","Value");
             Assert.That(
                             ()=>sut.PlaneDescriptor=keyValuePair,
@@ -24,7 +23,7 @@ namespace HConfigTests
         public void ChangingLevelValueAfterSetting_CausesException()
         {
 
-            ConfigSpoke sut = new ConfigSpoke("Key", "Value");
+            ConfigContext sut = new ConfigContext("Key", "Value");
             var keyValuePair = new KeyValuePair<string, string>("Key", "newValue");
             Assert.That(
                             () => sut.PlaneDescriptor = keyValuePair,
@@ -35,40 +34,40 @@ namespace HConfigTests
         [Test]
         public void SettingNullDescriptorKey_ThrowsException()
         {
-            ConfigSpoke  sut = new ConfigSpoke("","");
+            ConfigContext  sut = new ConfigContext("","");
             Assert.That(()=>sut.PlaneDescriptor = new KeyValuePair<string, string>(null,"ss"),Throws.Exception);
         }
         [Test]
         public void SettingEmptyDescriptorKey_ThrowsException()
         {
-            ConfigSpoke sut = new ConfigSpoke("", "");
+            ConfigContext sut = new ConfigContext("", "");
             Assert.That(() => sut.PlaneDescriptor = new KeyValuePair<string, string>("", "ss"), Throws.Exception);
         }
         [Test]
         public void SettingNullDescriptorValue_ThrowsException()
         {
-            ConfigSpoke sut = new ConfigSpoke("", "");
+            ConfigContext sut = new ConfigContext("", "");
             Assert.That(() => sut.PlaneDescriptor = new KeyValuePair<string, string>("ss", null), Throws.Exception);
         }
         [Test]
         public void SettingEmptyDescriptorValue_ThrowsException()
         {
-            ConfigSpoke sut = new ConfigSpoke("", "");
+            ConfigContext sut = new ConfigContext("", "");
             Assert.That(() => sut.PlaneDescriptor = new KeyValuePair<string, string>("ss", ""), Throws.Exception);
         }
         [Test]
         public void SettingValidDescriptorValue_ValueIsStored()
         {
-            ConfigSpoke sut = new ConfigSpoke("", "");
-            sut.PlaneDescriptor = new KeyValuePair<string, string>("PlaneName", "SpokeName");
+            ConfigContext sut = new ConfigContext("", "");
+            sut.PlaneDescriptor = new KeyValuePair<string, string>("PlaneName", "ConfigContextName");
             Assert.That(sut.PlaneDescriptor.Key.Equals("PlaneName", StringComparison.InvariantCulture));
-            Assert.That(sut.PlaneDescriptor.Value.Equals("SpokeName", StringComparison.InvariantCulture));
+            Assert.That(sut.PlaneDescriptor.Value.Equals("ConfigContextName", StringComparison.InvariantCulture));
         }
 
         [Test]
         public void UpsertingNewNameAndValue_CausesValueToBeStored()
         {
-            ConfigSpoke sut = new ConfigSpoke("LevelKey", "LevelValue");
+            ConfigContext sut = new ConfigContext("LevelKey", "LevelValue");
             sut.UpsertConfigValue("AConfigKey","AConfigValue");
             
             Assert.That(sut.GetConfigValue("AConfigKey").Equals("AConfigValue",StringComparison.InvariantCulture));
@@ -76,7 +75,7 @@ namespace HConfigTests
         [Test]
         public void UpsertingExistingNameAndValue_CausesValueToBeStored()
         {
-            ConfigSpoke sut = new ConfigSpoke("LevelKey", "LevelValue");
+            ConfigContext sut = new ConfigContext("LevelKey", "LevelValue");
             sut.UpsertConfigValue("AConfigKey", "AConfigValue");
             sut.UpsertConfigValue("AConfigKey", "ANewConfigValue");
             Assert.That(sut.GetConfigValue("AConfigKey").Equals("ANewConfigValue", StringComparison.InvariantCulture));
@@ -87,7 +86,7 @@ namespace HConfigTests
         public void TryGetValue_ReturnsFalseIfNoFound()
         {
             string configValue;
-            ConfigSpoke sut = new ConfigSpoke("LevelKey", "LevelValue");
+            ConfigContext sut = new ConfigContext("LevelKey", "LevelValue");
             sut.UpsertConfigValue("AConfigKey", "AConfigValue");
             Assert.IsFalse(sut.TryGetConfigValue("MissingKey", out configValue));
         }
@@ -95,7 +94,7 @@ namespace HConfigTests
         public void TryGetValue_ReturnsTrueIfFound()
         {
             string configValue;
-            ConfigSpoke sut = new ConfigSpoke("LevelKey", "LevelValue");
+            ConfigContext sut = new ConfigContext("LevelKey", "LevelValue");
             sut.UpsertConfigValue("AConfigKey", "AConfigValue");
             Assert.IsTrue(sut.TryGetConfigValue("AConfigKey", out configValue));
         }
@@ -104,7 +103,7 @@ namespace HConfigTests
         public void TryGetValue_SetsValueIfFound()
         {
             string configValue;
-            ConfigSpoke sut = new ConfigSpoke("LevelKey", "LevelValue");
+            ConfigContext sut = new ConfigContext("LevelKey", "LevelValue");
             sut.UpsertConfigValue("AConfigKey", "AConfigValue");
             sut.TryGetConfigValue("AConfigKey", out configValue);
             Assert.That(configValue.Equals("AConfigValue",StringComparison.InvariantCulture));
@@ -113,7 +112,7 @@ namespace HConfigTests
         public void TryGetValue_ReturnsCorrectValueWhenMultiopleEntries()
         {
             string configValue;
-            ConfigSpoke sut = new ConfigSpoke("LevelKey", "LevelValue");
+            ConfigContext sut = new ConfigContext("LevelKey", "LevelValue");
             sut.UpsertConfigValue("AKey1", "AValue1");
             sut.UpsertConfigValue("AKey2", "AValue2");
             sut.UpsertConfigValue("AKey3", "AValue3");
@@ -133,21 +132,21 @@ namespace HConfigTests
         [Test]
         public void GetValue_ReturnsNullIfNotFound()
         {
-            ConfigSpoke sut = new ConfigSpoke("LevelKey", "LevelValue");
+            ConfigContext sut = new ConfigContext("LevelKey", "LevelValue");
             Assert.IsNull(sut.GetConfigValue("MissingKey"));
         }
 
         [Test]
         public void GetValue_ReturnsValueIfFound()
         {
-            ConfigSpoke sut = new ConfigSpoke("LevelKey", "LevelValue");
+            ConfigContext sut = new ConfigContext("LevelKey", "LevelValue");
             sut.UpsertConfigValue("AKey","AValue");
             Assert.That(sut.GetConfigValue("AKey").Equals("AValue",StringComparison.InvariantCulture));
         }
         [Test]
         public void GetValue_ReturnsCorrectValueWhenMultiopleEntries()
         {
-            ConfigSpoke sut = new ConfigSpoke("LevelKey", "LevelValue");
+            ConfigContext sut = new ConfigContext("LevelKey", "LevelValue");
             sut.UpsertConfigValue("AKey1", "AValue1");
             sut.UpsertConfigValue("AKey2", "AValue2");
             sut.UpsertConfigValue("AKey3", "AValue3");

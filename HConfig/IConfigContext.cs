@@ -2,7 +2,7 @@
 
 namespace HConfig
 {
-    internal interface IConfigSpoke  
+    internal interface IConfigContext  
     {
         KeyValuePair<string,string>PlaneDescriptor { get; set; }     
 

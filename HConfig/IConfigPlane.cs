@@ -2,18 +2,18 @@
 
 namespace HConfig
 {
-    // A config plane contains all the config spokes . It can hold its own values Which are the default values for the plane
+    // A config plane contains all the config contexts. It can hold its own values Which are the default values for the plane
 
     internal interface IConfigPlane 
     {
         KeyValuePair<string, string> PlaneDescriptor { get; set; }  //Although it uses a PlaneDescriptor , the value is an empty string 
-        #region Spoke Manipulation 
-        void UpsertSpoke(IConfigSpoke configSpoke);
-        IConfigSpoke GetSpoke(string spokeName);
-        bool TryGetSpoke(string spokeName, out IConfigSpoke spoke);
+        #region ConfigContext Manipulation 
+        void UpsertConfigContext(IConfigContext configContext);
+        IConfigContext GetConfigContext(string configContextName);
+        bool TryGetConfigContext(string configContextName, out IConfigContext configContext);
         #endregion
 
-        string Context { get; set; } //This is the spoke name that will be used for this plane unless explicitly overridden
+        string SearchContext { get; set; } //This is the context name that will be used for this plane unless explicitly overridden
 
         #region Save Config Items 
         void UpsertConfigValue(string key, string value);

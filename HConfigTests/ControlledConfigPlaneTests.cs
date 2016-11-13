@@ -1,9 +1,4 @@
 ﻿using System;
-using System.CodeDom;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using HConfig;
 using NUnit.Framework;
 using Rhino.Mocks;
@@ -23,94 +18,94 @@ namespace HConfigTests
 
 
         [Test]
-        public void GetConfig_ReturnsValueIfFoundInPlane()
+        public void GetConfig_ReturnsValueIfKeyFound()
         {
             ControlledConfigPlane sut = new ControlledConfigPlane("MyPlane");
 
             sut.UpsertConfigValue("MyContext", "MyConfigKey", "MyConfigValue");
-            sut.Context = "MyContext";
+            sut.SearchContext = "MyContext";
             string configValue = sut.GetConfigValue("MyConfigKey");
 
             Assert.IsNotNull(configValue);
             Assert.AreEqual(configValue,"MyConfigValue");
         }
         [Test]
-        public void TryGetValue_ReturnstrueIfFoundInPlane()
+        public void TryGetValue_ReturnstrueIfKeyFound()
         {
             ControlledConfigPlane sut = new ControlledConfigPlane("MyPlane");
 
             sut.UpsertConfigValue("MyContext", "MyConfigKey", "MyConfigValue");
-            sut.Context = "MyContext";
+            sut.SearchContext = "MyContext";
             string configValue; 
             bool result= sut.TryGetConfigValue("MyConfigKey", out configValue);
 
             Assert.IsTrue(result);
         }
         [Test]
-        public void TryGetValue_OutputsValueIfFoundInPlane()
+        public void TryGetValue_OutputsValueIfKeyFound()
         {
             ControlledConfigPlane sut = new ControlledConfigPlane("MyPlane");
 
             sut.UpsertConfigValue("MyContext", "MyConfigKey", "MyConfigValue");
-            sut.Context = "MyContext";
+            sut.SearchContext = "MyContext";
             string configValue;
-            bool result = sut.TryGetConfigValue("MyConfigKey", out configValue);
+            sut.TryGetConfigValue("MyConfigKey", out configValue);
 
             Assert.IsNotNull(configValue);
             Assert.AreEqual(configValue,"MyConfigValue");
         }
         [Test]
-        public void GetConfig_ReturnsNullIfNotFoundInPlane()
+        public void GetConfig_ReturnsNullIfKeyNotFound()
         {
             ControlledConfigPlane sut = new ControlledConfigPlane("MyPlane");
 
             sut.UpsertConfigValue("MyContext", "MyConfigKey", "MyConfigValue");
-            sut.Context = "MyContext";
+            sut.SearchContext = "MyContext";
             string configValue= sut.GetConfigValue("MyConfigUnkownKey");
 
             Assert.IsNull(configValue);
         }
         [Test]
-        public void TryGetValue_ReturnsFalseIfNotFoundInPlane()
+        public void TryGetValue_ReturnsFalseIfKeyNotFound()
         {
             ControlledConfigPlane sut = new ControlledConfigPlane("MyPlane");
 
             sut.UpsertConfigValue("MyContext", "MyConfigKey", "MyConfigValue");
-            sut.Context = "MyContext";
+            sut.SearchContext = "MyContext";
             string configValue;
             bool result = sut.TryGetConfigValue("MyConfigUnkownKey", out configValue);
 
             Assert.IsFalse(result);
         }
         [Test]
-        public void TryGetValue_OutputsNullIfNotFoundInPlane()
+        public void TryGetValue_OutputsNullIfKeyNotFound()
         {
             ControlledConfigPlane sut = new ControlledConfigPlane("MyPlane");
 
             sut.UpsertConfigValue("MyContext", "MyConfigKey", "MyConfigValue");
-            sut.Context = "MyContext";
+            sut.SearchContext = "MyContext";
             string configValue;
-            bool result = sut.TryGetConfigValue("MyConfigUnkownKey", out configValue);
+            sut.TryGetConfigValue("MyConfigUnkownKey", out configValue);
 
             Assert.IsNull(configValue);
         }
 
         [Test]
-        public void GetValue_PassesToChildNotFoundInPlane()
+        public void GetValue_PassesToChildKeyNotFound()
         {
             var child = MockRepository.GenerateMock<IControlledConfigPlane>();
             ControlledConfigPlane sut = new ControlledConfigPlane("MyPlane");
             sut.Child = child;
 
            
-            sut.Context = "MyContext";
-            string configValue = sut.GetConfigValue("MyConfigUnkownKey");
+            sut.SearchContext = "MyContext";
+            sut.GetConfigValue("MyConfigUnkownKey");
 
            child.AssertWasCalled(x=>x.GetConfigValue(Arg<string>.Is.Equal("MyConfigUnkownKey")),options=>options.Repeat.Once());
 
         }
         [Test]
-        public void TryGetValue_PassesToChildIfNotFoundInPlane()
+        public void TryGetValue_PassesToChildIfKeyNotFound()
         {
             string configValue;
 
@@ -118,8 +113,8 @@ namespace HConfigTests
             ControlledConfigPlane sut = new ControlledConfigPlane("MyPlane");
             sut.Child = child;
             
-            sut.Context = "MyContext";
-            bool result= sut.TryGetConfigValue("MyConfigUnkownKey",out configValue);
+            sut.SearchContext = "MyContext";
+            sut.TryGetConfigValue("MyConfigUnkownKey",out configValue);
 
             child.AssertWasCalled(x => x.TryGetConfigValue(Arg<string>.Is.Equal("MyConfigUnkownKey"),
                                                            out Arg<string>.Out("hello").Dummy
@@ -128,13 +123,13 @@ namespace HConfigTests
         }
 
         [Test]
-        public void GetConfigKeyReport_ReturnsReportIfValueFound()
+        public void GetConfigKeyReport_ReturnsReportIfKeyFound()
         {
             throw new NotImplementedException();
 
         }
         [Test]
-        public void GetConfigKeyReport_ReportsFromChildIfValueNotFound()
+        public void GetConfigKeyReport_ReportsFromChildIfKeyNotFound()
         {
             throw new NotImplementedException();
 

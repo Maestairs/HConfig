@@ -49,202 +49,202 @@ namespace HConfigTests
         }
 
         [Test]
-        public void AddingNewSpoke_NewSpokeStored()
+        public void AddingNewConfigContext_NewConfigContextStored()
         {
             ConfigPlane sut = new ConfigPlane("PlaneName");
-            ConfigSpoke spoke= new ConfigSpoke("PlaneName","SpokeName");
-            sut.UpsertSpoke(spoke);
-            IConfigSpoke readSpoke = sut.GetSpoke("SpokeName");
-            Assert.IsNotNull(readSpoke);
-            Assert.That(readSpoke.PlaneDescriptor.Key=="PlaneName");
-            Assert.That(readSpoke.PlaneDescriptor.Value == "SpokeName");
+            ConfigContext configContext= new ConfigContext("PlaneName","ConfigContextName");
+            sut.UpsertConfigContext(configContext);
+            IConfigContext readConfigContext = sut.GetConfigContext("ConfigContextName");
+            Assert.IsNotNull(readConfigContext);
+            Assert.That(readConfigContext.PlaneDescriptor.Key=="PlaneName");
+            Assert.That(readConfigContext.PlaneDescriptor.Value == "ConfigContextName");
         }
 
         
         [Test]
-        public void AddingASpokeWithIncorrectPlaneNameThrowsException()
+        public void AddingAConfigContextWithIncorrectPlaneNameThrowsException()
         {
             ConfigPlane sut = new ConfigPlane("PlaneName");
-            ConfigSpoke spoke = new ConfigSpoke("NotPlaneName", "SpokeName");
-            Assert.That(()=>sut.UpsertSpoke(spoke),Throws.ArgumentException);
+            ConfigContext configContext = new ConfigContext("NotPlaneName", "ConfigContextName");
+            Assert.That(()=>sut.UpsertConfigContext(configContext),Throws.ArgumentException);
         }
         
         [Test]
-        public void AddingExistingSpoke_NewSpokeSaved()
+        public void AddingExistingConfigContext_NewConfigContextSaved()
         {
             ConfigPlane sut = new ConfigPlane("PlaneName");
-            ConfigSpoke spoke1 = new ConfigSpoke("PlaneName", "SpokeName");
-            spoke1.UpsertConfigValue("TestConfig","spoke1Value");
-            sut.UpsertSpoke(spoke1);
+            ConfigContext configContext1 = new ConfigContext("PlaneName", "ConfigContextName");
+            configContext1.UpsertConfigValue("TestConfig","configContext1Value");
+            sut.UpsertConfigContext(configContext1);
 
-            ConfigSpoke spoke2 = new ConfigSpoke("PlaneName", "SpokeName");
-            spoke2.UpsertConfigValue("TestConfig", "spoke2Value");
-            sut.UpsertSpoke(spoke2);
+            ConfigContext configContext2 = new ConfigContext("PlaneName", "ConfigContextName");
+            configContext2.UpsertConfigValue("TestConfig", "configContext2Value");
+            sut.UpsertConfigContext(configContext2);
 
-            IConfigSpoke readSpoke = sut.GetSpoke("SpokeName");
-            Assert.IsNotNull(readSpoke);
-            Assert.That(readSpoke.PlaneDescriptor.Key == "PlaneName");
-            Assert.That(readSpoke.PlaneDescriptor.Value == "SpokeName");
+            IConfigContext readConfigContext = sut.GetConfigContext("ConfigContextName");
+            Assert.IsNotNull(readConfigContext);
+            Assert.That(readConfigContext.PlaneDescriptor.Key == "PlaneName");
+            Assert.That(readConfigContext.PlaneDescriptor.Value == "ConfigContextName");
 
-            Assert.That(readSpoke.GetConfigValue("TestConfig").Equals("spoke2Value",StringComparison.InvariantCulture));
+            Assert.That(readConfigContext.GetConfigValue("TestConfig").Equals("configContext2Value",StringComparison.InvariantCulture));
         }
  
         [Test]
-        public void GettingSpoke_ReturnsSpokeIfPresent()
+        public void GettingConfigContext_ReturnsConfigContextIfPresent()
         {
             ConfigPlane sut = new ConfigPlane("PlaneName");
-            ConfigSpoke spoke1 = new ConfigSpoke("PlaneName", "SpokeName1");
-            spoke1.UpsertConfigValue("TestConfig", "spoke1Value");
-            sut.UpsertSpoke(spoke1);
+            ConfigContext configContext1 = new ConfigContext("PlaneName", "ConfigContextName1");
+            configContext1.UpsertConfigValue("TestConfig", "configContext1Value");
+            sut.UpsertConfigContext(configContext1);
 
-            ConfigSpoke spoke2 = new ConfigSpoke("PlaneName", "SpokeName2");
-            spoke2.UpsertConfigValue("TestConfig", "spoke2Value");
-            sut.UpsertSpoke(spoke2);
+            ConfigContext configContext2 = new ConfigContext("PlaneName", "ConfigContextName2");
+            configContext2.UpsertConfigValue("TestConfig", "configContext2Value");
+            sut.UpsertConfigContext(configContext2);
 
-            IConfigSpoke readSpoke = sut.GetSpoke("SpokeName2");
-            Assert.IsNotNull(readSpoke);
-            Assert.That(readSpoke.PlaneDescriptor.Key == "PlaneName");
-            Assert.That(readSpoke.PlaneDescriptor.Value == "SpokeName2");
+            IConfigContext readConfigContext = sut.GetConfigContext("ConfigContextName2");
+            Assert.IsNotNull(readConfigContext);
+            Assert.That(readConfigContext.PlaneDescriptor.Key == "PlaneName");
+            Assert.That(readConfigContext.PlaneDescriptor.Value == "ConfigContextName2");
 
         }
          
         [Test]
-        public void GettingSpoke_ReturnsNullIfNotPresent()
+        public void GettingConfigContext_ReturnsNullIfNotPresent()
         {
             ConfigPlane sut = new ConfigPlane("PlaneName");
-            ConfigSpoke spoke1 = new ConfigSpoke("PlaneName", "SpokeName1");
-            spoke1.UpsertConfigValue("TestConfig", "spoke1Value");
-            sut.UpsertSpoke(spoke1);
+            ConfigContext configContext1 = new ConfigContext("PlaneName", "ConfigContextName1");
+            configContext1.UpsertConfigValue("TestConfig", "configContext1Value");
+            sut.UpsertConfigContext(configContext1);
 
-            ConfigSpoke spoke2 = new ConfigSpoke("PlaneName", "SpokeName2");
-            spoke2.UpsertConfigValue("TestConfig", "spoke2Value");
-            sut.UpsertSpoke(spoke2);
+            ConfigContext configContext2 = new ConfigContext("PlaneName", "ConfigContextName2");
+            configContext2.UpsertConfigValue("TestConfig", "configContext2Value");
+            sut.UpsertConfigContext(configContext2);
 
-            IConfigSpoke readSpoke = sut.GetSpoke("UnknowSpokeName");
-            Assert.IsNull(readSpoke);
+            IConfigContext readConfigContext = sut.GetConfigContext("UnknowConfigContextName");
+            Assert.IsNull(readConfigContext);
         }
         
         [Test]
-        public void TryGetSpoke_ReturnsTrueIfPresent()
+        public void TryGetConfigContext_ReturnsTrueIfPresent()
         {
-            IConfigSpoke readSpoke;
+            IConfigContext readConfigContext;
             ConfigPlane sut = new ConfigPlane("PlaneName");
-            ConfigSpoke spoke1 = new ConfigSpoke("PlaneName", "SpokeName1");
-            spoke1.UpsertConfigValue("TestConfig", "spoke1Value");
-            sut.UpsertSpoke(spoke1);
+            ConfigContext configContext1 = new ConfigContext("PlaneName", "ConfigContextName1");
+            configContext1.UpsertConfigValue("TestConfig", "configContext1Value");
+            sut.UpsertConfigContext(configContext1);
 
-            ConfigSpoke spoke2 = new ConfigSpoke("PlaneName", "SpokeName2");
-            spoke2.UpsertConfigValue("TestConfig", "spoke2Value");
-            sut.UpsertSpoke(spoke2);
+            ConfigContext configContext2 = new ConfigContext("PlaneName", "ConfigContextName2");
+            configContext2.UpsertConfigValue("TestConfig", "configContext2Value");
+            sut.UpsertConfigContext(configContext2);
 
-            Assert.IsTrue(sut.TryGetSpoke("SpokeName2",out readSpoke));
-            Assert.IsNotNull(readSpoke);
+            Assert.IsTrue(sut.TryGetConfigContext("ConfigContextName2",out readConfigContext));
+            Assert.IsNotNull(readConfigContext);
 
         }
         
         [Test]
-        public void TryGetSpoke_OutputsValueIfPresent()
+        public void TryGetConfigContext_OutputsValueIfPresent()
         {
-            IConfigSpoke readSpoke;
+            IConfigContext readConfigContext;
             ConfigPlane sut = new ConfigPlane("PlaneName");
-            ConfigSpoke spoke1 = new ConfigSpoke("PlaneName", "SpokeName1");
-            spoke1.UpsertConfigValue("TestConfig", "spoke1Value");
-            sut.UpsertSpoke(spoke1);
+            ConfigContext configContext1 = new ConfigContext("PlaneName", "ConfigContextName1");
+            configContext1.UpsertConfigValue("TestConfig", "configContext1Value");
+            sut.UpsertConfigContext(configContext1);
 
-            ConfigSpoke spoke2 = new ConfigSpoke("PlaneName", "SpokeName2");
-            spoke2.UpsertConfigValue("TestConfig", "spoke2Value");
-            sut.UpsertSpoke(spoke2);
+            ConfigContext configContext2 = new ConfigContext("PlaneName", "ConfigContextName2");
+            configContext2.UpsertConfigValue("TestConfig", "configContext2Value");
+            sut.UpsertConfigContext(configContext2);
 
-            Assert.IsTrue(sut.TryGetSpoke("SpokeName2", out readSpoke));
-            Assert.That(readSpoke.PlaneDescriptor.Value.Equals("SpokeName2",StringComparison.InvariantCulture));
+            Assert.IsTrue(sut.TryGetConfigContext("ConfigContextName2", out readConfigContext));
+            Assert.That(readConfigContext.PlaneDescriptor.Value.Equals("ConfigContextName2",StringComparison.InvariantCulture));
         }
         [Test]
-        public void TryGetSpoke_ReturnsFalseIfNotPresent()
+        public void TryGetConfigContext_ReturnsFalseIfNotPresent()
         {
-            IConfigSpoke readSpoke;
+            IConfigContext readConfigContext;
             ConfigPlane sut = new ConfigPlane("PlaneName");
-            ConfigSpoke spoke1 = new ConfigSpoke("PlaneName", "SpokeName1");
-            spoke1.UpsertConfigValue("TestConfig", "spoke1Value");
-            sut.UpsertSpoke(spoke1);
+            ConfigContext configContext1 = new ConfigContext("PlaneName", "ConfigContextName1");
+            configContext1.UpsertConfigValue("TestConfig", "configContext1Value");
+            sut.UpsertConfigContext(configContext1);
 
-            ConfigSpoke spoke2 = new ConfigSpoke("PlaneName", "SpokeName2");
-            spoke2.UpsertConfigValue("TestConfig", "spoke2Value");
-            sut.UpsertSpoke(spoke2);
+            ConfigContext configContext2 = new ConfigContext("PlaneName", "ConfigContextName2");
+            configContext2.UpsertConfigValue("TestConfig", "configContext2Value");
+            sut.UpsertConfigContext(configContext2);
 
-            Assert.IsFalse(sut.TryGetSpoke("UnknownSpokeName", out readSpoke));
+            Assert.IsFalse(sut.TryGetConfigContext("UnknownConfigContextName", out readConfigContext));
           
         }
         [Test]
-        public void TryGetSpoke_OutputsNullIfNotPresent()
+        public void TryGetConfigContext_OutputsNullIfNotPresent()
         {
-            IConfigSpoke readSpoke;
+            IConfigContext readConfigContext;
             ConfigPlane sut = new ConfigPlane("PlaneName");
-            ConfigSpoke spoke1 = new ConfigSpoke("PlaneName", "SpokeName1");
-            spoke1.UpsertConfigValue("TestConfig", "spoke1Value");
-            sut.UpsertSpoke(spoke1);
+            ConfigContext configContext1 = new ConfigContext("PlaneName", "ConfigContextName1");
+            configContext1.UpsertConfigValue("TestConfig", "configContext1Value");
+            sut.UpsertConfigContext(configContext1);
 
-            ConfigSpoke spoke2 = new ConfigSpoke("PlaneName", "SpokeName2");
-            spoke2.UpsertConfigValue("TestConfig", "spoke2Value");
-            sut.UpsertSpoke(spoke2);
-            sut.TryGetSpoke("UnknownSpokeName", out readSpoke);
-            Assert.IsNull(readSpoke);
+            ConfigContext configContext2 = new ConfigContext("PlaneName", "ConfigContextName2");
+            configContext2.UpsertConfigValue("TestConfig", "configContext2Value");
+            sut.UpsertConfigContext(configContext2);
+            sut.TryGetConfigContext("UnknownConfigContextName", out readConfigContext);
+            Assert.IsNull(readConfigContext);
         }
          
         [Test]
-        public void TryGetValue_UsesCorrectSpokeForValue()
+        public void TryGetValue_UsesCorrectConfigContextForValue()
         {
             string configValue;
          
             ConfigPlane sut = new ConfigPlane("PlaneName");
-            ConfigSpoke spoke1 = new ConfigSpoke("PlaneName", "SpokeName1");
+            ConfigContext configContext1 = new ConfigContext("PlaneName", "ConfigContextName1");
            
-            sut.UpsertSpoke(spoke1);
-            sut.UpsertConfigValue("SpokeName1", "TestConfig", "spoke1Value");
+            sut.UpsertConfigContext(configContext1);
+            sut.UpsertConfigValue("ConfigContextName1", "TestConfig", "configContext1Value");
 
-            ConfigSpoke spoke2 = new ConfigSpoke("PlaneName", "SpokeName2");
+            ConfigContext configContext2 = new ConfigContext("PlaneName", "ConfigContextName2");
  
-            sut.UpsertSpoke(spoke2);
-            sut.UpsertConfigValue("SpokeName2", "TestConfig", "spoke2Value");
+            sut.UpsertConfigContext(configContext2);
+            sut.UpsertConfigValue("ConfigContextName2", "TestConfig", "configContext2Value");
 
-            Assert.IsTrue(sut.TryGetConfigValue("SpokeName1", "TestConfig", out configValue));
+            Assert.IsTrue(sut.TryGetConfigValue("ConfigContextName1", "TestConfig", out configValue));
             Assert.IsNotNull(configValue);
-            Assert.That(configValue.Equals("spoke1Value", StringComparison.InvariantCulture));
+            Assert.That(configValue.Equals("configContext1Value", StringComparison.InvariantCulture));
         }
        
         [Test]
-        public void TryGetValue_UsingContextUsesCorrectSpokeForValue()
+        public void TryGetValue_UsingContextUsesCorrectConfigContextForValue()
         {
             string configValue;
 
             ConfigPlane sut = new ConfigPlane("PlaneName");
-            ConfigSpoke spoke1 = new ConfigSpoke("PlaneName", "SpokeName1");
-            spoke1.UpsertConfigValue("TestConfig", "spoke1Value");
-            sut.UpsertSpoke(spoke1);
+            ConfigContext configContext1 = new ConfigContext("PlaneName", "ConfigContextName1");
+            configContext1.UpsertConfigValue("TestConfig", "configContext1Value");
+            sut.UpsertConfigContext(configContext1);
 
-            ConfigSpoke spoke2 = new ConfigSpoke("PlaneName", "SpokeName2");
-            spoke2.UpsertConfigValue("TestConfig", "spoke2Value");
-            sut.UpsertSpoke(spoke2);
-            sut.Context = "SpokeName1";
+            ConfigContext configContext2 = new ConfigContext("PlaneName", "ConfigContextName2");
+            configContext2.UpsertConfigValue("TestConfig", "configContext2Value");
+            sut.UpsertConfigContext(configContext2);
+            sut.SearchContext = "ConfigContextName1";
             Assert.IsTrue(sut.TryGetConfigValue("TestConfig", out configValue));
 
             Assert.IsNotNull(configValue);
-            Assert.That(configValue.Equals("spoke1Value", StringComparison.InvariantCulture));
+            Assert.That(configValue.Equals("configContext1Value", StringComparison.InvariantCulture));
         }
          
         [Test]
-        public void TryGetValue_UsesDefaultValueIfNoValueOnSpoke()
+        public void TryGetValue_UsesDefaultValueIfNoValueOnConfigContext()
         {
             string configValue;
 
             ConfigPlane sut = new ConfigPlane("PlaneName");
-            ConfigSpoke spoke1 = new ConfigSpoke("PlaneName", "SpokeName1");
-            spoke1.UpsertConfigValue("TestConfig", "spoke1Value");
-            sut.UpsertSpoke(spoke1);
+            ConfigContext configContext1 = new ConfigContext("PlaneName", "ConfigContextName1");
+            configContext1.UpsertConfigValue("TestConfig", "configContext1Value");
+            sut.UpsertConfigContext(configContext1);
 
-            ConfigSpoke spoke2 = new ConfigSpoke("PlaneName", "SpokeName2");
-            spoke2.UpsertConfigValue("TestConfig", "spoke2Value");
-            sut.UpsertSpoke(spoke2);
-            sut.Context = "SpokeName1";
+            ConfigContext configContext2 = new ConfigContext("PlaneName", "ConfigContextName2");
+            configContext2.UpsertConfigValue("TestConfig", "configContext2Value");
+            sut.UpsertConfigContext(configContext2);
+            sut.SearchContext = "ConfigContextName1";
             sut.UpsertDefaultConfigValue("ConfigOnlyInDefault","ADefaultValue");
 
             Assert.IsTrue(sut.TryGetConfigValue("ConfigOnlyInDefault", out configValue));
@@ -254,84 +254,84 @@ namespace HConfigTests
         }
       
         [Test]
-        public void GetValue_UsesCorrectSpokeForValue()
+        public void GetValue_UsesCorrectConfigContextForValue()
         {
             string configValue;
 
             ConfigPlane sut = new ConfigPlane("PlaneName");
-            ConfigSpoke spoke1 = new ConfigSpoke("PlaneName", "SpokeName1");
-            spoke1.UpsertConfigValue("TestConfig", "spoke1Value");
-            sut.UpsertSpoke(spoke1);
+            ConfigContext configContext1 = new ConfigContext("PlaneName", "ConfigContextName1");
+            configContext1.UpsertConfigValue("TestConfig", "configContext1Value");
+            sut.UpsertConfigContext(configContext1);
 
-            ConfigSpoke spoke2 = new ConfigSpoke("PlaneName", "SpokeName2");
-            spoke2.UpsertConfigValue("TestConfig", "spoke2Value");
-            sut.UpsertSpoke(spoke2);
-            configValue = sut.GetConfigValue("SpokeName1", "TestConfig");
+            ConfigContext configContext2 = new ConfigContext("PlaneName", "ConfigContextName2");
+            configContext2.UpsertConfigValue("TestConfig", "configContext2Value");
+            sut.UpsertConfigContext(configContext2);
+            configValue = sut.GetConfigValue("ConfigContextName1", "TestConfig");
     
             Assert.IsNotNull(configValue);
-            Assert.That(configValue.Equals("spoke1Value", StringComparison.InvariantCulture));
+            Assert.That(configValue.Equals("configContext1Value", StringComparison.InvariantCulture));
         }
         [Test]
-        public void GetValue_UsesDefaultIfNotFoundOnSpoke()
+        public void GetValue_UsesDefaultIfNotFoundOnConfigContext()
         {
             ConfigPlane sut = new ConfigPlane("PlaneName");
-            ConfigSpoke spoke1 = new ConfigSpoke("PlaneName", "SpokeName1");
-            spoke1.UpsertConfigValue("TestConfig", "spoke1Value");
-            sut.UpsertSpoke(spoke1);
+            ConfigContext configContext1 = new ConfigContext("PlaneName", "ConfigContextName1");
+            configContext1.UpsertConfigValue("TestConfig", "configContext1Value");
+            sut.UpsertConfigContext(configContext1);
 
             sut.UpsertDefaultConfigValue("SomeKey","SomeValue");
              
-            var configValue = sut.GetConfigValue("SpokeName1","SomeKey");
+            var configValue = sut.GetConfigValue("ConfigContextName1","SomeKey");
 
             Assert.IsNotNull(configValue);
             Assert.That(configValue.Equals("SomeValue", StringComparison.InvariantCulture));
         }
         [Test]
-        public void GetValue_UsesContextIfNoSpokeNameprovided()
+        public void GetValue_UsesContextIfNoConfigContextNameprovided()
         {
             string configValue;
 
             ConfigPlane sut = new ConfigPlane("PlaneName");
-            ConfigSpoke spoke1 = new ConfigSpoke("PlaneName", "SpokeName1");
-            spoke1.UpsertConfigValue("TestConfig", "spoke1Value");
-            sut.UpsertSpoke(spoke1);
+            ConfigContext configContext1 = new ConfigContext("PlaneName", "ConfigContextName1");
+            configContext1.UpsertConfigValue("TestConfig", "configContext1Value");
+            sut.UpsertConfigContext(configContext1);
 
             sut.UpsertDefaultConfigValue("SomeKey", "SomeValue");
-            sut.Context = "SpokeName1";
+            sut.SearchContext = "ConfigContextName1";
             configValue = sut.GetConfigValue("TestConfig");
 
             Assert.IsNotNull(configValue);
-            Assert.That(configValue.Equals("spoke1Value", StringComparison.InvariantCulture));
+            Assert.That(configValue.Equals("configContext1Value", StringComparison.InvariantCulture));
         }
 
         [Test]
-        public void UpsertingConfigValue_WhereNoSpokeExists_OneIsCreatedAndConfigStoredOnTheNewSpoke()
+        public void UpsertingConfigValue_WhereNoConfigContextExists_OneIsCreatedAndConfigStoredOnTheNewConfigContext()
         {
             string configValue;
 
             ConfigPlane sut = new ConfigPlane("PlaneName");
             
-            sut.UpsertConfigValue("MyNewSpoke","MyKey","MyValue");
+            sut.UpsertConfigValue("MyNewConfigContext","MyKey","MyValue");
 
 
-            configValue = sut.GetConfigValue("MyNewSpoke", "MyKey");
-            Assert.IsNotNull(sut.GetSpoke("MyNewSpoke"));
+            configValue = sut.GetConfigValue("MyNewConfigContext", "MyKey");
+            Assert.IsNotNull(sut.GetConfigContext("MyNewConfigContext"));
             Assert.IsNotNull(configValue);
             Assert.That(configValue.Equals("MyValue", StringComparison.InvariantCulture));
         }
          
         [Test]
-        public void UpsertingConfigValue_WhereNoContextSpokeExists_OneIsCreatedAndConfigStoredOnTheNewSpoke()
+        public void UpsertingConfigValue_WhereNoContextConfigContextExists_OneIsCreatedAndConfigStoredOnTheNewConfigContext()
         {
             string configValue;
 
             ConfigPlane sut = new ConfigPlane("PlaneName");
-            sut.Context = "MyNewSpoke";
+            sut.SearchContext = "MyNewConfigContext";
             sut.UpsertConfigValue( "MyKey", "MyValue");
 
 
-            configValue = sut.GetConfigValue("MyNewSpoke", "MyKey");
-            Assert.IsNotNull(sut.GetSpoke("MyNewSpoke"));
+            configValue = sut.GetConfigValue("MyNewConfigContext", "MyKey");
+            Assert.IsNotNull(sut.GetConfigContext("MyNewConfigContext"));
             Assert.IsNotNull(configValue);
             Assert.That(configValue.Equals("MyValue", StringComparison.InvariantCulture));
         }
@@ -342,19 +342,38 @@ namespace HConfigTests
              
 
             ConfigPlane sut = new ConfigPlane("PlaneName");
-            ConfigSpoke spoke1 = new ConfigSpoke("PlaneName", "SpokeName1");
-            spoke1.UpsertConfigValue("TestConfig", "spoke1Value");
-            sut.UpsertSpoke(spoke1);
+            ConfigContext configContext1 = new ConfigContext("PlaneName", "ConfigContextName1");
+            configContext1.UpsertConfigValue("TestConfig", "configContext1Value");
+            sut.UpsertConfigContext(configContext1);
 
             sut.UpsertDefaultConfigValue("SomeKey", "SomeValue");
-            sut.Context = "SpokeName1";
+            sut.SearchContext = "ConfigContextName1";
             var configKeyReport = sut.GetConfigKeyReport("UnknownTestConfig");
 
             Assert.IsNull(configKeyReport);
            
         }
+
         [Test]
-        public void GetConfigKeyReport_ReturnsCorrectValuesForAConfigOnASpoke()
+        public void SettingContextToAnUnusedContext_GetConfigValueWillReturnValueFromDefault()
+        {
+            ConfigPlane sut = new ConfigPlane("PlaneName");
+            ConfigContext configContext1 = new ConfigContext("PlaneName", "ConfigContextName1");
+            configContext1.UpsertConfigValue("SomeKey", "configContext1Value");
+            sut.UpsertConfigContext(configContext1);
+
+            sut.UpsertDefaultConfigValue("SomeKey", "SomeValue");
+            sut.SearchContext = "Invalid";
+            var configValue = sut.GetConfigValue( "SomeKey");
+
+            Assert.IsNotNull(configValue);
+            Assert.That(configValue.Equals("SomeValue", StringComparison.InvariantCulture));
+
+        }
+
+
+        [Test]
+        public void GetConfigKeyReport_ReturnsCorrectValuesForAConfigOnAConfigContext()
         {
             throw new NotImplementedException();
         }
@@ -379,12 +398,12 @@ namespace HConfigTests
             throw new NotImplementedException();
         }
         [Test]
-        public void GetConfigKeyReport_ReturnsCorrectSpokeName()
+        public void GetConfigKeyReport_ReturnsCorrectConfigContextame()
         {
             throw new NotImplementedException();
         }
         [Test]
-        public void GetConfigKeyReport_SetsValueFoundOnSpokeCorrectly()
+        public void GetConfigKeyReport_SetsValueFoundOnConfigContextCorrectly()
         {
             throw new NotImplementedException();
         }

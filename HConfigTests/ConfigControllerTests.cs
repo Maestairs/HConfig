@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using HConfig;
 using NUnit.Framework;
-using NUnit.Framework.Interfaces;
 
 
 namespace HConfigTests
@@ -20,7 +19,7 @@ namespace HConfigTests
         public void OnCreate_ContextIsNull()
         {
             ConfigController sut = new ConfigController();
-            Assert.IsNull(sut.Context);
+            Assert.IsNull(sut.SearchContext);
         }
 
         [TestCase("FirstPlane", "SecondPlane", "ThirdPlane", "FourthPlane")]
@@ -30,10 +29,10 @@ namespace HConfigTests
             string fourthPlane)
         {
             ConfigControllerTestHelper sut = new ConfigControllerTestHelper();
-            sut.UpsertConfigValue("FirstPlane","MySpoke","ConfigKey","ConfigValueFirstPlane");
-            sut.UpsertConfigValue("SecondPlane", "MySpoke", "ConfigKey", "ConfigValueSecondPlane");
-            sut.UpsertConfigValue("ThirdPlane", "MySpoke", "ConfigKey", "ConfigValueThirdPlane");
-            sut.UpsertConfigValue("FourthPlane", "MySpoke", "ConfigKey", "ConfigValueFourthPlane");
+            sut.UpsertConfigValue("FirstPlane","MyConfigContext","ConfigKey","ConfigValueFirstPlane");
+            sut.UpsertConfigValue("SecondPlane", "MyConfigContext", "ConfigKey", "ConfigValueSecondPlane");
+            sut.UpsertConfigValue("ThirdPlane", "MyConfigContext", "ConfigKey", "ConfigValueThirdPlane");
+            sut.UpsertConfigValue("FourthPlane", "MyConfigContext", "ConfigKey", "ConfigValueFourthPlane");
 
             Queue<string>priority = new Queue<string>();
              
@@ -68,10 +67,10 @@ namespace HConfigTests
 
             sut.Priority = priority;
 
-            sut.UpsertConfigValue("FirstPlane", "MySpoke", "ConfigKey", "ConfigValueFirstPlane");
-            sut.UpsertConfigValue("SecondPlane", "MySpoke", "ConfigKey", "ConfigValueSecondPlane");
-            sut.UpsertConfigValue("ThirdPlane", "MySpoke", "ConfigKey", "ConfigValueThirdPlane");
-            sut.UpsertConfigValue("FourthPlane", "MySpoke", "ConfigKey", "ConfigValueFourthPlane");
+            sut.UpsertConfigValue("FirstPlane", "MyConfigContext", "ConfigKey", "ConfigValueFirstPlane");
+            sut.UpsertConfigValue("SecondPlane", "MyConfigContext", "ConfigKey", "ConfigValueSecondPlane");
+            sut.UpsertConfigValue("ThirdPlane", "MyConfigContext", "ConfigKey", "ConfigValueThirdPlane");
+            sut.UpsertConfigValue("FourthPlane", "MyConfigContext", "ConfigKey", "ConfigValueFourthPlane");
 
 
 
@@ -97,10 +96,10 @@ namespace HConfigTests
 
             sut.Priority = priority;
 
-            sut.UpsertConfigValue("FirstPlane", "MySpoke", "ConfigKey", "ConfigValue");
+            sut.UpsertConfigValue("FirstPlane", "MyConfigContext", "ConfigKey", "ConfigValue");
             Dictionary<string, string> context= new Dictionary<string, string>();
-            context.Add("FirstPlane","MySpoke");
-            sut.Context = context;
+            context.Add("FirstPlane","MyConfigContext");
+            sut.SearchContext = context;
 
             string result = sut.GetConfigValue("ConfigKey");
             Assert.NotNull(result);
@@ -119,10 +118,10 @@ namespace HConfigTests
 
             sut.Priority = priority;
 
-            sut.UpsertConfigValue("FirstPlane", "MySpoke", "ConfigKey", "ConfigValue");
+            sut.UpsertConfigValue("FirstPlane", "MyConfigContext", "ConfigKey", "ConfigValue");
             Dictionary<string, string> context = new Dictionary<string, string>();
-            context.Add("FirstPlane", "MySpoke");
-            sut.Context = context;
+            context.Add("FirstPlane", "MyConfigContext");
+            sut.SearchContext = context;
 
             string configValue;
             bool success = sut.TryGetConfigValue("ConfigKey",out configValue);
@@ -145,8 +144,8 @@ namespace HConfigTests
 
             sut.UpsertDefaultConfigValue("FirstPlane", "ConfigKey", "ConfigValue");
             Dictionary<string, string> context = new Dictionary<string, string>();
-            context.Add("FirstPlane", "MySpoke");
-            sut.Context = context;
+            context.Add("FirstPlane", "MyConfigContext");
+            sut.SearchContext = context;
 
             string result = sut.GetConfigValue("ConfigKey");
             Assert.NotNull(result);
@@ -167,8 +166,8 @@ namespace HConfigTests
 
             sut.UpsertDefaultConfigValue("FirstPlane",  "ConfigKey", "ConfigValue");
             Dictionary<string, string> context = new Dictionary<string, string>();
-            context.Add("FirstPlane", "MySpoke");
-            sut.Context = context;
+            context.Add("FirstPlane", "MyConfigContext");
+            sut.SearchContext = context;
 
             string configValue;
             bool success = sut.TryGetConfigValue("ConfigKey", out configValue);
@@ -184,10 +183,10 @@ namespace HConfigTests
             string fourthPlane, string expectedValue)
         {
             ConfigController sut = new ConfigController();
-            sut.UpsertConfigValue("FirstPlane", "MySpoke", "ConfigKey", "ConfigValueFirstPlane");
-            sut.UpsertConfigValue("SecondPlane", "MySpoke", "ConfigKey", "ConfigValueSecondPlane");
-            sut.UpsertConfigValue("ThirdPlane", "MySpoke", "ConfigKey", "ConfigValueThirdPlane");
-            sut.UpsertConfigValue("FourthPlane", "MySpoke", "ConfigKey", "ConfigValueFourthPlane");
+            sut.UpsertConfigValue("FirstPlane", "MyConfigContext", "ConfigKey", "ConfigValueFirstPlane");
+            sut.UpsertConfigValue("SecondPlane", "MyConfigContext", "ConfigKey", "ConfigValueSecondPlane");
+            sut.UpsertConfigValue("ThirdPlane", "MyConfigContext", "ConfigKey", "ConfigValueThirdPlane");
+            sut.UpsertConfigValue("FourthPlane", "MyConfigContext", "ConfigKey", "ConfigValueFourthPlane");
 
 
             Queue<string> priority = new Queue<string>();
@@ -198,11 +197,11 @@ namespace HConfigTests
 
             sut.Priority = priority;
             Dictionary<string, string> context = new Dictionary<string, string>();
-            context.Add("FirstPlane", "MySpoke");
-            context.Add("SecondPlane", "MySpoke");
-            context.Add("ThirdPlane", "MySpoke");
-            context.Add("FourthPlane", "MySpoke");
-            sut.Context = context;
+            context.Add("FirstPlane", "MyConfigContext");
+            context.Add("SecondPlane", "MyConfigContext");
+            context.Add("ThirdPlane", "MyConfigContext");
+            context.Add("FourthPlane", "MyConfigContext");
+            sut.SearchContext = context;
 
             string configValue = sut.GetConfigValue("ConfigKey");
             Assert.That(configValue.Equals(expectedValue,StringComparison.InvariantCulture));
@@ -229,11 +228,11 @@ namespace HConfigTests
 
             sut.Priority = priority;
             Dictionary<string, string> context = new Dictionary<string, string>();
-            context.Add("FirstPlane", "MySpoke");
-            context.Add("SecondPlane", "MySpoke");
-            context.Add("ThirdPlane", "MySpoke");
-            context.Add("FourthPlane", "MySpoke");
-            sut.Context = context;
+            context.Add("FirstPlane", "MyConfigContext");
+            context.Add("SecondPlane", "MyConfigContext");
+            context.Add("ThirdPlane", "MyConfigContext");
+            context.Add("FourthPlane", "MyConfigContext");
+            sut.SearchContext = context;
 
             string configValue = sut.GetConfigValue("ConfigKey");
             Assert.That(configValue.Equals(expectedValue, StringComparison.InvariantCulture));

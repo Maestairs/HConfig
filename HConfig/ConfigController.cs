@@ -7,15 +7,15 @@ using System.Runtime.CompilerServices;
 
 namespace HConfig
 {
-    public class ConfigController : IConfigController
+    public class ConfigController : IConfigController , IConfigReporter
     {
         private readonly Dictionary<string,IControlledConfigPlane> _planes;
         private Queue<string> _priority;
 
         // ReSharper disable once InconsistentNaming
         internal  IControlledConfigPlane _entryPoint;  //Set to the highest priority plane
-        private Dictionary<string, string> _context;
-        private List<string> _knownConfigKeys;          // maintain a list of known keys for reporting purposes 
+        private Dictionary<string, string> _searchContext;
+        private readonly List<string> _knownConfigKeys;          // maintain a list of known keys for reporting purposes 
        
 
 
@@ -38,14 +38,14 @@ namespace HConfig
             }
         }
 
-        public Dictionary<string, string> Context
+        public Dictionary<string, string> SearchContext
         {
-            get { return _context; }
+            get { return _searchContext; }
 
             set
             {
-                _context = value;
-                SetContext(_context);
+                _searchContext = value;
+                SetContext(_searchContext);
             }
         }
 
@@ -57,18 +57,18 @@ namespace HConfig
                 IControlledConfigPlane configPlane;
                 if (_planes.TryGetValue(plane.Key, out configPlane))
                 {
-                    configPlane.Context = plane.Value;
+                    configPlane.SearchContext = plane.Value;
                 }
                 // Dont throw exception if no plane found as context may be set 
                 // before planes are created
             }
         }
 
-        public void UpsertConfigValue(string planeName,string spokeName, string key, string value)
+        public void UpsertConfigValue(string planeName,string configContextName, string key, string value)
         {
             ValidateKeyRegistraion(key);
             IControlledConfigPlane configPlane = GetOrCreateConfigPlane(planeName);
-            configPlane.UpsertConfigValue(spokeName,key,value);
+            configPlane.UpsertConfigValue(configContextName,key,value);
                 
         }
 
@@ -93,7 +93,21 @@ namespace HConfig
 
         public ConfigKeyReport GetConfigKeyReport(string key)
         {
-            throw new NotImplementedException();
+            return _entryPoint.GetConfigKeyReport(key);
+        }
+
+        // Uses knownkeys as a list to search for should never fail to find a configkeyreport for each
+        public List<ConfigKeyReport> GetKeyReports()
+        {
+            ConfigKeyReport configKeyReport;
+            List<ConfigKeyReport>retVal = new List<ConfigKeyReport>();
+            foreach (string key in _knownConfigKeys)
+            {
+                configKeyReport = GetConfigKeyReport(key);
+                if(configKeyReport == null) throw new Exception($"Could not find an expected key For {key}");
+                retVal.Add(configKeyReport);
+            }
+            return retVal;
         }
 
         // Keep a track of known keys for reporting purposes
@@ -111,7 +125,7 @@ namespace HConfig
                 configPlane = new ControlledConfigPlane(planeName);
                 _planes.Add(planeName, configPlane);
                 PrioritisePlanes();
-                SetContext(Context);  // Context may be set before a plane is created , so need to cope with it here
+                SetContext(SearchContext);  // Context may be set before a plane is created , so need to cope with it here
             }
             return configPlane;
         }
@@ -162,10 +176,9 @@ namespace HConfig
 
         private void ValidateContextAndPriorities()
         {
-            if (Context == null) throw new ApplicationException("Attempt to ReadConfig With No Context Set");
+            if (SearchContext == null) throw new ApplicationException("Attempt to ReadConfig With No Context Set");
             if (Priority == null) throw new ArgumentException("Attempt to ReadConfig With No Priorities Set");
         }
-
 
     }
 }

@@ -5,17 +5,16 @@ using System.Linq;
 namespace HConfig
 {
     /// <summary>
-    /// A ConfigPlane can hold config values either in its default values or in the spokes 
-    /// Which are overrides for a specific instance. Values are overriden on a key by key basis
-    /// So for a given key the ConfigPlane first looks in the spoke for the given context
+
+    /// So for a given key the ConfigPlane first looks in the configContext for the given context
     /// if none found there it looks in its default values
     /// </summary>
     internal class ConfigPlane :  IConfigPlane
     {
         private KeyValuePair<string, string> _planeDescriptor;
-        private Dictionary<string, IConfigSpoke> _spokes;
+        private Dictionary<string, IConfigContext> _configContexts;
         private Dictionary<string, string> _defaultValues;
-        private string _context;
+        private string _searchContext;
 
         public ConfigPlane(string name)
         {
@@ -25,9 +24,9 @@ namespace HConfig
         private void Init(string name)
         {
             _planeDescriptor = new KeyValuePair<string, string>(name,"");
-            _spokes= new Dictionary<string, IConfigSpoke>();
+            _configContexts= new Dictionary<string, IConfigContext>();
             _defaultValues = new Dictionary<string, string>();
-            _context=string.Empty;
+            _searchContext=string.Empty;
         }
 
         public KeyValuePair<string, string> PlaneDescriptor
@@ -47,76 +46,76 @@ namespace HConfig
             }
         }
 
-        public string Context
+        public string SearchContext
         {
             get
             {
-                return _context;
+                return _searchContext;
             }
             set
             {
                 VerifyContext(value);
-                _context = value;
+                _searchContext = value;
             }
         }
 
-        public void UpsertSpoke(IConfigSpoke configSpoke)
+        public void UpsertConfigContext(IConfigContext configContext)
         {
-            if(configSpoke.PlaneDescriptor.Key != PlaneDescriptor.Key) //Incorrect plane 
+            if(configContext.PlaneDescriptor.Key != PlaneDescriptor.Key) //Incorrect plane 
                 throw new ArgumentException(
-                    $"Incorrect Plane Descriptor : Expected {PlaneDescriptor.Key} Received {configSpoke.PlaneDescriptor.Key}");
+                    $"Incorrect Plane Descriptor : Expected {PlaneDescriptor.Key} Received {configContext.PlaneDescriptor.Key}");
 
-            _spokes.Remove(configSpoke.PlaneDescriptor.Value);
-            _spokes.Add(configSpoke.PlaneDescriptor.Value,configSpoke);
+            _configContexts.Remove(configContext.PlaneDescriptor.Value);
+            _configContexts.Add(configContext.PlaneDescriptor.Value,configContext);
         }
 
-        public IConfigSpoke GetSpoke(string spokeName)
+        public IConfigContext GetConfigContext(string contextConfigName)
         {
-            return _spokes.FirstOrDefault(s => s.Key.Equals(spokeName, StringComparison.InvariantCulture)).Value;
+            return _configContexts.FirstOrDefault(s => s.Key.Equals(contextConfigName, StringComparison.InvariantCulture)).Value;
         }
 
 
-        public bool TryGetSpoke(string spokeName, out IConfigSpoke spoke)
+        public bool TryGetConfigContext(string searchContextName, out IConfigContext configContext)
         {
-            return (_spokes.TryGetValue(spokeName, out spoke));
+            return (_configContexts.TryGetValue(searchContextName, out configContext));
         }
 
-        public void UpsertConfigValue(string spokeName, string key, string value)
+        public void UpsertConfigValue(string configContextName, string key, string value)
         {
-            IConfigSpoke spoke;
-            VerifyContext(spokeName);
-            if (TryGetSpoke(spokeName, out spoke))
+            IConfigContext configContext;
+            VerifyContext(configContextName);
+            if (TryGetConfigContext(configContextName, out configContext))
             {
-                spoke.UpsertConfigValue(key,value);
+                configContext.UpsertConfigValue(key,value);
             }
             else
             {
-                SaveToNewSpoke(spokeName, key, value);
+                SaveToNewConfigContext(configContextName, key, value);
             }
         }
         public void UpsertConfigValue(string key, string value)
         {
-             UpsertConfigValue(Context,key,value);
+             UpsertConfigValue(SearchContext,key,value);
         }
-        private void SaveToNewSpoke(string spokeName, string key, string value)
+        private void SaveToNewConfigContext(string configContextName, string key, string value)
         {
-            IConfigSpoke spoke = new ConfigSpoke(PlaneDescriptor.Key, spokeName);
-            spoke.UpsertConfigValue(key, value);
-            _spokes.Add(spokeName, spoke);
+            IConfigContext configContext = new ConfigContext(PlaneDescriptor.Key, configContextName);
+            configContext.UpsertConfigValue(key, value);
+            _configContexts.Add(configContextName, configContext);
         }
 
         public virtual bool TryGetConfigValue(string key, out string value)
         {
-            return TryGetConfigValue(Context, key, out value);
+            return TryGetConfigValue(SearchContext, key, out value);
         }
 
-        public virtual bool TryGetConfigValue(string spokeName, string key, out string value)
+        public virtual bool TryGetConfigValue(string searchContextName, string key, out string value)
         {
             string configValue;
-            IConfigSpoke spoke;
-            VerifyContext(spokeName);
-            //Search Spoke , then default values
-            if (TryGetSpoke(spokeName, out spoke) && spoke.TryGetConfigValue(key,out configValue))
+            IConfigContext configContext;
+            VerifyContext(searchContextName);
+            //Search configContext , then default values
+            if (TryGetConfigContext(searchContextName, out configContext) && configContext.TryGetConfigValue(key,out configValue))
             {
                 value = configValue;
                 return true;
@@ -124,13 +123,13 @@ namespace HConfig
             return (_defaultValues.TryGetValue(key, out value));
         }
 
-        public virtual string GetConfigValue(string spokeName, string key)
+        public virtual string GetConfigValue(string searchContextName, string key)
         {
-            VerifyContext(spokeName);
-            IConfigSpoke spoke;
-            if (TryGetSpoke(spokeName, out spoke)  )
+            VerifyContext(searchContextName);
+            IConfigContext configContext;
+            if (TryGetConfigContext(searchContextName, out configContext)  )
             {
-                var configValue = spoke.GetConfigValue(key);
+                var configValue = configContext.GetConfigValue(key);
                 if (configValue != null)
                     return configValue;
             }
@@ -140,7 +139,7 @@ namespace HConfig
 
         public virtual string GetConfigValue(string key)
         {
-            return GetConfigValue(Context, key);
+            return GetConfigValue(SearchContext, key);
         }
         
         public void UpsertDefaultConfigValue(string key, string value)
@@ -153,7 +152,7 @@ namespace HConfig
         private void VerifyContext(string context)
         {
             if (context == null || context.Equals(string.Empty, StringComparison.InvariantCulture))
-                throw new ArgumentException("Invalid Spoke Name Context: null or empty");
+                throw new ArgumentException("Invalid context Name Context: null or empty");
         }
 
         public virtual  ConfigKeyReport GetConfigKeyReport(string key)
@@ -165,21 +164,23 @@ namespace HConfig
                 Key = key,
                 Value = configValue
             };
-            string spokeName;
-            retVal.ValueFoundOnSpoke = WasValueFromContextSpecifiedSpoke(key,out spokeName);
+            string configContextName;
+            retVal.ConfigSource = WasValueFromConfigContext(key, out configContextName)
+                ? ConfigSource.ContextSpecific
+                : ConfigSource.Default;
             retVal.PlaneName = PlaneDescriptor.Key;
-            retVal.SpokeName = spokeName;
+            retVal.ConfigContextName = configContextName;
 
             return (retVal);
         }
 
-        private bool WasValueFromContextSpecifiedSpoke(string key, out string spokeName)
+        private bool WasValueFromConfigContext(string key, out string configContextName)
         {
-            IConfigSpoke spoke;
-            spokeName = null;
-            if (!TryGetSpoke(Context, out spoke)) return false;
-            spokeName = spoke.PlaneDescriptor.Value;
-            return spoke.GetConfigValue(key) != null;
+            IConfigContext configContext;
+            configContextName = null;
+            if (!TryGetConfigContext(SearchContext, out configContext)) return false;
+            configContextName = configContext.PlaneDescriptor.Value;
+            return configContext.GetConfigValue(key) != null;
         }
     }
 }

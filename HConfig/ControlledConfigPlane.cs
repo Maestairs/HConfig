@@ -20,11 +20,11 @@
             return result ?? Child?.GetConfigValue(key);
         }
 
-        public override string GetConfigValue(string spokeName, string key)
+        public override string GetConfigValue(string configContextName, string key)
         {
-            string result = base.GetConfigValue(spokeName,key);
+            string result = base.GetConfigValue(configContextName,key);
 
-            return result ?? Child?.GetConfigValue(spokeName, key);
+            return result ?? Child?.GetConfigValue(configContextName, key);
         }
 
         public override bool TryGetConfigValue(string key, out string value)
@@ -37,12 +37,12 @@
             return true;
         }
 
-        public override bool TryGetConfigValue(string spokeName, string key, out string value)
+        public override bool TryGetConfigValue(string configContextName, string key, out string value)
         {
-            bool success = base.TryGetConfigValue(spokeName , key, out value);
+            bool success = base.TryGetConfigValue(configContextName , key, out value);
             if (!success)
             {
-                return Child != null && (Child.TryGetConfigValue(spokeName,key, out value));
+                return Child != null && (Child.TryGetConfigValue(configContextName,key, out value));
             }
             return true;
         }

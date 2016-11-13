@@ -43,12 +43,13 @@
   <ItemGroup>
     <Compile Include="ConfigController.cs" />
     <Compile Include="ConfigPlane.cs" />
-    <Compile Include="ConfigSpoke.cs" />
+    <Compile Include="ConfigContext.cs" />
     <Compile Include="ConfigKeyReport.cs" />
     <Compile Include="ControlledConfigPlane.cs" />
     <Compile Include="IConfigController.cs" />
     <Compile Include="IConfigPlane.cs" />
-    <Compile Include="IConfigSpoke.cs" />
+    <Compile Include="IConfigContext.cs" />
+    <Compile Include="IConfigReporter.cs" />
     <Compile Include="IControlledConfigPlane.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
