@@ -166,8 +166,8 @@ namespace HConfig
             };
             string configContextName;
             retVal.ConfigSource = WasValueFromConfigContext(key, out configContextName)
-                ? ConfigSource.ContextSpecific
-                : ConfigSource.Default;
+                ? ConfigKeySource.ContextSpecific
+                : ConfigKeySource.Default;
             retVal.PlaneName = PlaneDescriptor.Key;
             retVal.ConfigContextName = configContextName;
 
