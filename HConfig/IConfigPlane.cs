@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 
 namespace HConfig
 {
@@ -6,6 +7,9 @@ namespace HConfig
 
     internal interface IConfigPlane 
     {
+
+       IConfigPlane Child { get; set; }
+
         KeyValuePair<string, string> PlaneDescriptor { get; set; }  //Although it uses a PlaneDescriptor , the value is an empty string 
         #region ConfigContext Manipulation 
         void UpsertConfigContext(IConfigContext configContext);

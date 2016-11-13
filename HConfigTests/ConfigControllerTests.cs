@@ -43,7 +43,7 @@ namespace HConfigTests
 
             sut.Priority = priority;
 
-            IControlledConfigPlane planePointer = sut.GetEntryPoint();
+            IConfigPlane planePointer = sut.GetEntryPoint();
 
             Assert.That(planePointer.PlaneDescriptor.Key.Equals(firstPlane,StringComparison.InvariantCulture));
             Assert.That(planePointer.Child.PlaneDescriptor.Key.Equals(secondPlane,StringComparison.InvariantCulture));
@@ -74,7 +74,7 @@ namespace HConfigTests
 
 
 
-            IControlledConfigPlane planePointer = sut.GetEntryPoint();
+            IConfigPlane planePointer = sut.GetEntryPoint();
 
             Assert.That(planePointer.PlaneDescriptor.Key.Equals(firstPlane, StringComparison.InvariantCulture));
             Assert.That(planePointer.Child.PlaneDescriptor.Key.Equals(secondPlane, StringComparison.InvariantCulture));
@@ -272,7 +272,7 @@ namespace HConfigTests
 
     internal class ConfigControllerTestHelper : ConfigController
     {
-        internal IControlledConfigPlane GetEntryPoint()
+        internal IConfigPlane GetEntryPoint()
         {
             return _entryPoint;
         }

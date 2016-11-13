@@ -74,7 +74,6 @@
     <Compile Include="ConfigControllerTests.cs" />
     <Compile Include="ConfigPlaneTests.cs" />
     <Compile Include="ConfigContextTests.cs" />
-    <Compile Include="ControlledConfigPlaneTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

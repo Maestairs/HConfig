@@ -59,6 +59,51 @@ namespace HConfig
             }
         }
 
+        public IConfigPlane Child { get; set; }
+    
+
+        public string GetConfigValue(string key)
+        {
+            string result = GetLocalConfigValue(key);
+
+            return result ?? Child?.GetConfigValue(key);
+        }
+        public  string GetConfigValue(string configContextName, string key)
+        {
+            string result = GetLocalConfigValue(configContextName, key);
+
+            return result ?? Child?.GetConfigValue(configContextName, key);
+        }
+
+        public  bool TryGetConfigValue(string key, out string value)
+        {
+            bool success = TryGetLocalConfigValue(key, out value);
+            if (!success)
+            {
+                return Child != null && (Child.TryGetConfigValue(key, out value));
+            }
+            return true;
+        }
+
+        public  bool TryGetConfigValue(string configContextName, string key, out string value)
+        {
+            bool success = TryGetLocalConfigValue(configContextName, key, out value);
+            if (!success)
+            {
+                return Child != null && (Child.TryGetConfigValue(configContextName, key, out value));
+            }
+            return true;
+        }
+
+
+        public  ConfigKeyReport GetConfigKeyReport(string key)
+        {
+            ConfigKeyReport retVal = GetLocalConfigKeyReport(key);
+
+            return retVal != null ? (retVal) : Child?.GetConfigKeyReport(key);
+        }
+
+
         public void UpsertConfigContext(IConfigContext configContext)
         {
             if(configContext.PlaneDescriptor.Key != PlaneDescriptor.Key) //Incorrect plane 
@@ -97,19 +142,22 @@ namespace HConfig
         {
              UpsertConfigValue(SearchContext,key,value);
         }
-        private void SaveToNewConfigContext(string configContextName, string key, string value)
+
+        public void UpsertDefaultConfigValue(string key, string value)
         {
-            IConfigContext configContext = new ConfigContext(PlaneDescriptor.Key, configContextName);
-            configContext.UpsertConfigValue(key, value);
-            _configContexts.Add(configContextName, configContext);
+            _defaultValues.Remove(key);
+            _defaultValues.Add(key, value);
         }
 
-        public virtual bool TryGetConfigValue(string key, out string value)
+        private  bool TryGetLocalConfigValue(string key, out string value)
         {
-            return TryGetConfigValue(SearchContext, key, out value);
+            return TryGetLocalConfigValue(SearchContext, key, out value);
         }
 
-        public virtual bool TryGetConfigValue(string searchContextName, string key, out string value)
+
+
+
+        private bool TryGetLocalConfigValue(string searchContextName, string key, out string value)
         {
             string configValue;
             IConfigContext configContext;
@@ -123,7 +171,7 @@ namespace HConfig
             return (_defaultValues.TryGetValue(key, out value));
         }
 
-        public virtual string GetConfigValue(string searchContextName, string key)
+        private  string GetLocalConfigValue(string searchContextName, string key)
         {
             VerifyContext(searchContextName);
             IConfigContext configContext;
@@ -137,27 +185,17 @@ namespace HConfig
             return _defaultValues.FirstOrDefault(d => d.Key.Equals(key, StringComparison.InvariantCulture)).Value;
         }
 
-        public virtual string GetConfigValue(string key)
+        private string GetLocalConfigValue(string key)
         {
-            return GetConfigValue(SearchContext, key);
+            return GetLocalConfigValue(SearchContext, key);
         }
         
-        public void UpsertDefaultConfigValue(string key, string value)
-        {
-            _defaultValues.Remove(key);
-            _defaultValues.Add(key,value);
-        }
+  
 
-        // ReSharper disable once UnusedParameter.Local
-        private void VerifyContext(string context)
-        {
-            if (context == null || context.Equals(string.Empty, StringComparison.InvariantCulture))
-                throw new ArgumentException("Invalid context Name Context: null or empty");
-        }
 
-        public virtual  ConfigKeyReport GetConfigKeyReport(string key)
+        private  ConfigKeyReport GetLocalConfigKeyReport(string key)
         {
-            string configValue = GetConfigValue(key);
+            string configValue = GetLocalConfigValue(key);
             if (configValue == null) return null;
             ConfigKeyReport retVal = new ConfigKeyReport
             {
@@ -174,6 +212,13 @@ namespace HConfig
             return (retVal);
         }
 
+        // ReSharper disable once UnusedParameter.Local
+        private void VerifyContext(string context)
+        {
+            if (context == null || context.Equals(string.Empty, StringComparison.InvariantCulture))
+                throw new ArgumentException("Invalid context Name Context: null or empty");
+        }
+
         private bool WasValueFromConfigContext(string key, out string configContextName)
         {
             IConfigContext configContext;
@@ -181,6 +226,13 @@ namespace HConfig
             if (!TryGetConfigContext(SearchContext, out configContext)) return false;
             configContextName = configContext.PlaneDescriptor.Value;
             return configContext.GetConfigValue(key) != null;
+        }
+
+        private void SaveToNewConfigContext(string configContextName, string key, string value)
+        {
+            IConfigContext configContext = new ConfigContext(PlaneDescriptor.Key, configContextName);
+            configContext.UpsertConfigValue(key, value);
+            _configContexts.Add(configContextName, configContext);
         }
     }
 }

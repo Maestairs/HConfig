@@ -9,11 +9,11 @@ namespace HConfig
 {
     public class ConfigController : IConfigController , IConfigReporter
     {
-        private readonly Dictionary<string,IControlledConfigPlane> _planes;
+        private readonly Dictionary<string,IConfigPlane> _planes;
         private Queue<string> _priority;
 
         // ReSharper disable once InconsistentNaming
-        internal  IControlledConfigPlane _entryPoint;  //Set to the highest priority plane
+        internal  IConfigPlane _entryPoint;  //Set to the highest priority plane
         private Dictionary<string, string> _searchContext;
         private readonly List<string> _knownConfigKeys;          // maintain a list of known keys for reporting purposes 
        
@@ -22,7 +22,7 @@ namespace HConfig
 
         public  ConfigController()
         {
-            _planes = new Dictionary<string, IControlledConfigPlane>();
+            _planes = new Dictionary<string, IConfigPlane>();
             _knownConfigKeys = new List<string>();
         }
 
@@ -54,7 +54,7 @@ namespace HConfig
             if (context == null) return;
             foreach (var plane in context)
             {
-                IControlledConfigPlane configPlane;
+                IConfigPlane configPlane;
                 if (_planes.TryGetValue(plane.Key, out configPlane))
                 {
                     configPlane.SearchContext = plane.Value;
@@ -67,7 +67,7 @@ namespace HConfig
         public void UpsertConfigValue(string planeName,string configContextName, string key, string value)
         {
             ValidateKeyRegistraion(key);
-            IControlledConfigPlane configPlane = GetOrCreateConfigPlane(planeName);
+            IConfigPlane configPlane = GetOrCreateConfigPlane(planeName);
             configPlane.UpsertConfigValue(configContextName,key,value);
                 
         }
@@ -75,7 +75,7 @@ namespace HConfig
         public void UpsertDefaultConfigValue(string planeName, string key, string value)
         {
             ValidateKeyRegistraion(key);
-            IControlledConfigPlane configPlane = GetOrCreateConfigPlane(planeName);
+            IConfigPlane configPlane = GetOrCreateConfigPlane(planeName);
             configPlane.UpsertDefaultConfigValue( key, value);
         }
 
@@ -117,12 +117,12 @@ namespace HConfig
                 _knownConfigKeys.Add(key);
         }
 
-        private IControlledConfigPlane GetOrCreateConfigPlane(string planeName)
+        private IConfigPlane GetOrCreateConfigPlane(string planeName)
         {
-            IControlledConfigPlane configPlane;
+            IConfigPlane configPlane;
             if (!_planes.TryGetValue(planeName, out configPlane))
             {
-                configPlane = new ControlledConfigPlane(planeName);
+                configPlane = new ConfigPlane(planeName);
                 _planes.Add(planeName, configPlane);
                 PrioritisePlanes();
                 SetContext(SearchContext);  // Context may be set before a plane is created , so need to cope with it here
@@ -135,7 +135,7 @@ namespace HConfig
         {
             if (Priority != null)
             {
-                IControlledConfigPlane previousPlane=null;
+                IConfigPlane previousPlane=null;
 
                 foreach (var plane in _planes) //reset child links
                     plane.Value.Child = null;
@@ -143,7 +143,7 @@ namespace HConfig
 
                 foreach (var priority in Priority)
                 {
-                    IControlledConfigPlane currentPlane;
+                    IConfigPlane currentPlane;
 
                     //Dont throw exception as priorities might be set before config values
                     //And hence the plane may not exist yet . Hence why we redo priority on a new plane
@@ -162,9 +162,9 @@ namespace HConfig
             }
         }
 
-        private bool TryGetPlane(string planeName, out IControlledConfigPlane plane)
+        private bool TryGetPlane(string planeName, out IConfigPlane plane)
         {
-            IControlledConfigPlane controlledPlane;
+            IConfigPlane controlledPlane;
             if (_planes.TryGetValue(planeName, out controlledPlane))
             {
                 plane = controlledPlane;
