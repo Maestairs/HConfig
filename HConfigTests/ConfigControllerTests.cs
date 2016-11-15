@@ -241,32 +241,130 @@ namespace HConfigTests
         [Test]
         public void GetConfigKeyReport_ReturnsNullIfConfigNotFound()
         {
-            throw new NotImplementedException();
+            ConfigController sut = new ConfigController();
+            sut.UpsertConfigValue("FirstPlane", "MyConfigContext", "ConfigKey", "ConfigValueFirstPlane");
+            sut.UpsertConfigValue("SecondPlane", "MyConfigContext", "ConfigKey", "ConfigValueSecondPlane");
+            sut.UpsertConfigValue("ThirdPlane", "MyConfigContext", "ConfigKey", "ConfigValueThirdPlane");
+            sut.UpsertConfigValue("FourthPlane", "MyConfigContext", "ConfigKey", "ConfigValueFourthPlane");
+
+
+            Queue<string> priority = new Queue<string>();
+            priority.Enqueue("FirstPlane");
+
+
+            sut.Priority = priority;
+            Dictionary<string, string> context = new Dictionary<string, string>();
+            context.Add("FirstPlane", "MyConfigContext");
+
+            sut.SearchContext = context;
+
+            var configKeyReport = sut.GetConfigKeyReport("UnknownConfigKey");
+            Assert.IsNull(configKeyReport);
         }
 
         [Test]
-        public void GetConfigKeyReport_ReturnsReportIfConfigValueFound()
+        public void GetConfigKeyReport_ReturnsReportIfConfigValuePresent()
         {
-            throw new NotImplementedException();
+            ConfigController sut = new ConfigController();
+            sut.UpsertConfigValue("FirstPlane", "MyConfigContext", "ConfigKey", "ConfigValueFirstPlane");
+            sut.UpsertConfigValue("SecondPlane", "MyConfigContext", "ConfigKey", "ConfigValueSecondPlane");
+            sut.UpsertConfigValue("ThirdPlane", "MyConfigContext", "ConfigKey", "ConfigValueThirdPlane");
+            sut.UpsertConfigValue("FourthPlane", "MyConfigContext", "ConfigKey", "ConfigValueFourthPlane");
+
+
+            Queue<string> priority = new Queue<string>();
+            priority.Enqueue("FirstPlane");
+
+
+            sut.Priority = priority;
+            Dictionary<string, string> context = new Dictionary<string, string>();
+            context.Add("FirstPlane", "MyConfigContext");
+
+            sut.SearchContext = context;
+
+            var configKeyReport = sut.GetConfigKeyReport("ConfigKey");
+            Assert.IsNotNull(configKeyReport);
         }
+        
 
         [Test]
-        public void AddingAConfigValue_KeyAddedToKnownKeys()
+        public void GetConfigKeysReport_ReturnsFourElementsWhenFourAreExpected()
         {
+            ConfigController sut = new ConfigController();
+            sut.UpsertConfigValue("FirstPlane", "MyConfigContext", "ConfigKey1", "ConfigValueFirstPlane");
+            sut.UpsertConfigValue("SecondPlane", "MyConfigContext", "ConfigKey2", "ConfigValueSecondPlane");
+            sut.UpsertConfigValue("ThirdPlane", "MyConfigContext", "ConfigKey3", "ConfigValueThirdPlane");
+            sut.UpsertConfigValue("FourthPlane", "MyConfigContext", "ConfigKey4", "ConfigValueFourthPlane");
 
-            throw new NotImplementedException();
+
+            Queue<string> priority = new Queue<string>();
+            priority.Enqueue("FirstPlane");
+            priority.Enqueue("SecondPlane");
+            priority.Enqueue("ThirdPlane");
+            priority.Enqueue("FourthPlane");
+
+
+            sut.Priority = priority;
+            Dictionary<string, string> context = new Dictionary<string, string>();
+            context.Add("FirstPlane", "MyConfigContext");
+            context.Add("SecondPlane", "MyConfigContext");
+            context.Add("ThirdPlane", "MyConfigContext");
+            context.Add("FourthPlane", "MyConfigContext");
+
+            sut.SearchContext = context;
+
+            var configKeyReport = sut.GetKeysReport();
+            Assert.That(configKeyReport.Count == 4);
         }
+  
         [Test]
-        public void AddingAknownConfigValue_KeyNotAddedToKnownKeys()
+        public void GetConfigKeysReport_DoesNotReportOnPlanesNotInPriority()
         {
-            throw new NotImplementedException();
+            ConfigController sut = new ConfigController();
+            sut.UpsertConfigValue("FirstPlane", "MyConfigContext", "ConfigKey1", "ConfigValueFirstPlane");
+            sut.UpsertConfigValue("SecondPlane", "MyConfigContext", "ConfigKey2", "ConfigValueSecondPlane");
+            sut.UpsertConfigValue("ThirdPlane", "MyConfigContext", "ConfigKey3", "ConfigValueThirdPlane");
+            sut.UpsertConfigValue("FourthPlane", "MyConfigContext", "ConfigKey4", "ConfigValueFourthPlane");
+
+
+            Queue<string> priority = new Queue<string>();
+            priority.Enqueue("FirstPlane");
+            // SecondPlaneMissing From priority
+            priority.Enqueue("ThirdPlane");
+            priority.Enqueue("FourthPlane");
+
+
+            sut.Priority = priority;
+            Dictionary<string, string> context = new Dictionary<string, string>();
+            context.Add("FirstPlane", "MyConfigContext");
+            context.Add("SecondPlane", "MyConfigContext");
+            context.Add("ThirdPlane", "MyConfigContext");
+            context.Add("FourthPlane", "MyConfigContext");
+
+            sut.SearchContext = context;
+
+            var configKeyReport = sut.GetKeysReport();
+            Assert.That(configKeyReport.Count == 3);
+
+            Assert.IsTrue(DoesReportContainEntryForPlane(configKeyReport,"FirstPlane"));
+            Assert.IsFalse(DoesReportContainEntryForPlane(configKeyReport,"SecondPlane"));
+            Assert.IsTrue(DoesReportContainEntryForPlane(configKeyReport,"ThirdPlane"));
+            Assert.IsTrue(DoesReportContainEntryForPlane(configKeyReport,"FourthPlane"));
+
 
         }
 
-        [Test]
-        public void GetConfigKeyReports_ReturnsValidListOfContextKeyReports()
+        private static bool DoesReportContainEntryForPlane(List<ConfigKeyReport> configKeysReport, string planeName)
         {
-            throw new NotImplementedException();
+            bool retVal = false;
+            for (int index = 0; index < configKeysReport.Count && retVal == false; index++)
+            {
+                ConfigKeyReport c = configKeysReport[index];
+                if (c.PlaneName == planeName)
+                    retVal = true;
+                
+            }
+            return (retVal);
         }
     }
 
@@ -276,6 +374,7 @@ namespace HConfigTests
         {
             return _entryPoint;
         }
+
     }
     
 }

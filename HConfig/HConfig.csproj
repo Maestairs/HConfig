@@ -49,6 +49,7 @@
     <Compile Include="IConfigPlane.cs" />
     <Compile Include="IConfigContext.cs" />
     <Compile Include="IConfigReporter.cs" />
+    <Compile Include="IConfigWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

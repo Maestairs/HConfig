@@ -97,15 +97,16 @@ namespace HConfig
         }
 
         // Uses knownkeys as a list to search for should never fail to find a configkeyreport for each
-        public List<ConfigKeyReport> GetKeyReports()
+        public List<ConfigKeyReport> GetKeysReport()
         {
             ConfigKeyReport configKeyReport;
             List<ConfigKeyReport>retVal = new List<ConfigKeyReport>();
             foreach (string key in _knownConfigKeys)
             {
                 configKeyReport = GetConfigKeyReport(key);
-                if(configKeyReport == null) throw new Exception($"Could not find an expected key For {key}");
-                retVal.Add(configKeyReport);
+                // Dont throw exception if key not found - it may be ommited by being in a plane that is not in priority
+                if(configKeyReport != null)
+                 retVal.Add(configKeyReport);
             }
             return retVal;
         }

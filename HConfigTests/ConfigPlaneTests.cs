@@ -499,55 +499,86 @@ namespace HConfigTests
         [Test]
         public void GetConfigKeyReport_ReturnsReportIfKeyFound()
         {
-            throw new NotImplementedException();
 
+            ConfigPlane sut = new ConfigPlane("PlaneName");
+            sut.SearchContext = "SomeContext";
+            sut.UpsertConfigValue("SomeContext","MyKey", "MyValue");
+            var configKeyReport = sut.GetConfigKeyReport("MyKey");
+            Assert.NotNull(configKeyReport);
         }
+
+
         [Test]
         public void GetConfigKeyReport_ReportsFromChildIfKeyNotFound()
         {
-            throw new NotImplementedException();
+            ConfigPlane sut = new ConfigPlane("TopPlane");
+            ConfigPlane child = new ConfigPlane("ChildPlane");
+            child.SearchContext = "SomeContext";
+            child.UpsertConfigValue("SomeContext", "MyKey", "MyValue");
+            
+
+            sut.Child = child;
+            sut.SearchContext = "SomeSearchContext";
+            var configKeyReport = sut.GetConfigKeyReport("MyKey");
+
+
+            Assert.NotNull(configKeyReport);
 
         }
 
         [Test]
-        public void GetConfigKeyReport_ReturnsCorrectValuesForAConfigOnAConfigContext()
+        public void GetConfigKeyReport_ReturnsCorrectValuesForAConfigSourceOnAConfigContext()
         {
-            throw new NotImplementedException();
+            ConfigPlane sut = new ConfigPlane("PlaneName");
+            sut.SearchContext = "SomeContext";
+            sut.UpsertConfigValue("SomeContext", "MyKey", "MyValue");
+            var configKeyReport = sut.GetConfigKeyReport("MyKey");
+            Assert.That(configKeyReport.ConfigSource == ConfigKeySource.ContextSpecific);
         }
         [Test]
-        public void GetConfigKeyReport_ReturnsCorrectValuesForADefaultConfig()
+        public void GetConfigKeyReport_ReturnsCorrectValuesForADefaultConfigSource()
         {
-            throw new NotImplementedException();
+            ConfigPlane sut = new ConfigPlane("PlaneName");
+            sut.SearchContext = "SomeContext";
+            sut.UpsertDefaultConfigValue( "MyKey", "MyValue");
+            var configKeyReport = sut.GetConfigKeyReport("MyKey");
+            Assert.That(configKeyReport.ConfigSource == ConfigKeySource.Default);
         }
         [Test]
         public void GetConfigKeyReport_ReturnsCorrectConfigPlaneName()
         {
-            throw new NotImplementedException();
+            ConfigPlane sut = new ConfigPlane("PlaneName");
+            sut.SearchContext = "SomeContext";
+            sut.UpsertConfigValue("SomeContext", "MyKey", "MyValue");
+            var configKeyReport = sut.GetConfigKeyReport("MyKey");
+            Assert.That(configKeyReport.PlaneName == "PlaneName");
         }
         [Test]
         public void GetConfigKeyReport_ReturnsCorrectConfigKeyName()
         {
-            throw new NotImplementedException();
+            ConfigPlane sut = new ConfigPlane("PlaneName");
+            sut.SearchContext = "SomeContext";
+            sut.UpsertConfigValue("SomeContext", "MyKey", "MyValue");
+            var configKeyReport = sut.GetConfigKeyReport("MyKey");
+            Assert.That(configKeyReport.Key == "MyKey");
         }
         [Test]
         public void GetConfigKeyReport_ReturnsCorrectConfigValue()
         {
-            throw new NotImplementedException();
+            ConfigPlane sut = new ConfigPlane("PlaneName");
+            sut.SearchContext = "SomeContext";
+            sut.UpsertConfigValue("SomeContext", "MyKey", "MyValue");
+            var configKeyReport = sut.GetConfigKeyReport("MyKey");
+            Assert.That(configKeyReport.Value == "MyValue");
         }
         [Test]
         public void GetConfigKeyReport_ReturnsCorrectConfigContextame()
         {
-            throw new NotImplementedException();
-        }
-        [Test]
-        public void GetConfigKeyReport_SetsValueFoundOnConfigContextCorrectly()
-        {
-            throw new NotImplementedException();
-        }
-        [Test]
-        public void GetConfigKeyReport_SetsValueFoundInDefaultCorrectly()
-        {
-            throw new NotImplementedException();
+            ConfigPlane sut = new ConfigPlane("PlaneName");
+            sut.SearchContext = "SomeContext";
+            sut.UpsertConfigValue("SomeContext", "MyKey", "MyValue");
+            var configKeyReport = sut.GetConfigKeyReport("MyKey");
+            Assert.That(configKeyReport.ConfigContextName == "SomeContext");
         }
     }
 }
