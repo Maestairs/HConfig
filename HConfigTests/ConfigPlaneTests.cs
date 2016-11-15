@@ -287,6 +287,19 @@ namespace HConfigTests
             Assert.That(configValue.Equals("SomeValue", StringComparison.InvariantCulture));
         }
         [Test]
+        public void GetValue_UsesDefaultIfNoConfigContextProvided()
+        {
+            ConfigPlane sut = new ConfigPlane("PlaneName");
+
+
+            sut.UpsertDefaultConfigValue("SomeKey", "SomeValue");
+
+            var configValue = sut.GetConfigValue( "SomeKey");
+
+            Assert.IsNotNull(configValue);
+            Assert.That(configValue.Equals("SomeValue", StringComparison.InvariantCulture));
+        }
+        [Test]
         public void GetValue_UsesContextIfNoConfigContextNameprovided()
         {
             string configValue;
@@ -580,5 +593,8 @@ namespace HConfigTests
             var configKeyReport = sut.GetConfigKeyReport("MyKey");
             Assert.That(configKeyReport.ConfigContextName == "SomeContext");
         }
+
+         
+     
     }
 }

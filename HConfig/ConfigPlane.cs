@@ -161,7 +161,7 @@ namespace HConfig
         {
             string configValue;
             IConfigContext configContext;
-            VerifyContext(searchContextName);
+            
             //Search configContext , then default values
             if (TryGetConfigContext(searchContextName, out configContext) && configContext.TryGetConfigValue(key,out configValue))
             {
@@ -173,7 +173,7 @@ namespace HConfig
 
         private  string GetLocalConfigValue(string searchContextName, string key)
         {
-            VerifyContext(searchContextName);
+           
             IConfigContext configContext;
             if (TryGetConfigContext(searchContextName, out configContext)  )
             {
@@ -213,11 +213,11 @@ namespace HConfig
         }
 
         // ReSharper disable once UnusedParameter.Local
-        private void VerifyContext(string context)
-        {
-            if (context == null || context.Equals(string.Empty, StringComparison.InvariantCulture))
-                throw new ArgumentException("Invalid context Name Context: null or empty");
-        }
+       private void VerifyContext(string context)
+       {
+           if (context == null || context.Equals(string.Empty, StringComparison.InvariantCulture))
+               throw new ArgumentException("Invalid context Name Context: null or empty");
+       }
 
         private bool WasValueFromConfigContext(string key, out string configContextName)
         {
