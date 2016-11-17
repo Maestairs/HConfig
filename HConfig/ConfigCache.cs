@@ -6,6 +6,7 @@ namespace HConfig
 {
     public class ConfigCache : IConfigCache
     {
+        // ReSharper disable once InconsistentNaming
         protected readonly Dictionary<string,string> _cache ;
 
         public ConfigCache()

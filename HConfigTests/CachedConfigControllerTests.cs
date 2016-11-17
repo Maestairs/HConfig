@@ -13,11 +13,13 @@ namespace HConfigTests
         public void Construction_WithNoCacheDoesNotThrowException()
         {
 
+            // ReSharper disable once ObjectCreationAsStatement
             Assert.DoesNotThrow(()=> new CacheableConfigController());
         }
         [Test]
         public void Construction_WithACacheDoesNotThrowException()
         {
+            // ReSharper disable once ObjectCreationAsStatement
             Assert.DoesNotThrow(() => new CacheableConfigController(new ConfigCache()));
         }
         [Test]
@@ -101,7 +103,7 @@ namespace HConfigTests
             context.Add("FirstPlane", "MyConfigContext");
             sut.SearchContext = context;
 
-            string result = sut.GetConfigValue("ConfigKey");
+            sut.GetConfigValue("ConfigKey");
 
             configCache.AssertWasCalled(x => x.CacheInsert(Arg<string>.Is.Equal("ConfigKey"), Arg<string>.Is.Equal("ConfigValue")));
         }
