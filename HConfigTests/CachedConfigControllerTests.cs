@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using HConfig;
 using NUnit.Framework;
 
 namespace HConfigTests
