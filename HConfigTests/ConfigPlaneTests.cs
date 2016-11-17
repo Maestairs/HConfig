@@ -500,7 +500,25 @@ namespace HConfigTests
                                                             ), options => options.Repeat.Once()
                                 );
         }
+        [Test]
+        public void TryGetValueWithNamedContext_PassesToChildIfKeyNotFound()
+        {
+            string configValue;
 
+            var child = MockRepository.GenerateMock<IConfigPlane>();
+            ConfigPlane sut = new ConfigPlane("MyPlane")
+            {
+                Child = child,
+                SearchContext = "MyContext"
+            };
+
+            sut.TryGetConfigValue("MyContext","MySearchKey", out configValue);
+
+            child.AssertWasCalled(x => x.TryGetConfigValue(Arg<string>.Is.Equal("MyContext"),Arg<string>.Is.Equal("MySearchKey"),
+                                                           out Arg<string>.Out("hello").Dummy
+                                                            ), options => options.Repeat.Once()
+                                );
+        }
         [Test]
         public void UsingInvalidContext_CausesException()
         {

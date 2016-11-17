@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 
 namespace HConfig
 {
-    public class ConfigController : IConfigController , IConfigReporter
+    public class ConfigController : IConfigController , IConfigReporter 
     {
         private readonly Dictionary<string,IConfigPlane> _planes;
         private Queue<string> _priority;
@@ -26,7 +26,7 @@ namespace HConfig
             _knownConfigKeys = new List<string>();
         }
 
-        public Queue<string> Priority
+        public  Queue<string> Priority
         {
             get { return (_priority); }
 
@@ -38,7 +38,7 @@ namespace HConfig
             }
         }
 
-        public Dictionary<string, string> SearchContext
+        public  Dictionary<string, string> SearchContext
         {
             get { return _searchContext; }
 
@@ -49,7 +49,10 @@ namespace HConfig
             }
         }
 
-        public void SetContext(Dictionary<string, string> context)
+
+
+
+        public virtual void SetContext(Dictionary<string, string> context)
         {
             if (context == null) return;
             foreach (var plane in context)
@@ -79,13 +82,13 @@ namespace HConfig
             configPlane.UpsertDefaultConfigValue( key, value);
         }
 
-        public bool TryGetConfigValue(string key, out string value)
+        public virtual bool TryGetConfigValue(string key, out string value)
         {
             ValidateContextAndPriorities();
             return _entryPoint.TryGetConfigValue(key, out value);
         }
 
-        public string GetConfigValue(string key)
+        public virtual string GetConfigValue(string key)
         {
             ValidateContextAndPriorities();
             return _entryPoint.GetConfigValue(key);
@@ -132,7 +135,7 @@ namespace HConfig
         }
 
         // NB Priority might mention planes that dont exist 
-        private void PrioritisePlanes()
+        protected virtual void PrioritisePlanes()
         {
             if (Priority != null)
             {
@@ -180,6 +183,5 @@ namespace HConfig
             if (SearchContext == null) throw new ApplicationException("Attempt to ReadConfig With No Context Set");
             if (Priority == null) throw new ArgumentException("Attempt to ReadConfig With No Priorities Set");
         }
-
     }
 }

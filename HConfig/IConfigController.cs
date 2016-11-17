@@ -26,6 +26,5 @@ namespace HConfig
 
         Queue<string> Priority { get; set; }                    // The order in which planes are to be searched
 
-  
-    }
+     }
 }
