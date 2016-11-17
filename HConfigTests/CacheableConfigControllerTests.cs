@@ -7,7 +7,7 @@ using Rhino.Mocks;
 namespace HConfigTests
 {
     [TestFixture]
-    public class CachedConfigControllerTests
+    public class CacheableConfigControllerTests
     {
         [Test]
         public void Construction_WithNoCacheDoesNotThrowException()
@@ -65,7 +65,7 @@ namespace HConfigTests
             Assert.That(result.Equals("ConfigValue"));
         }
         [Test]
-        public void IfCacheSpecifiedInProperty_CanWriteAndReadConfigValue()
+        public void IfCacheSpecifiedInProperty_CanWriteAndGetConfigValue()
         {
             CacheableConfigController sut = new CacheableConfigController();
 
@@ -83,6 +83,28 @@ namespace HConfigTests
 
             string result = sut.GetConfigValue("ConfigKey");
             Assert.NotNull(result);
+            Assert.That(result.Equals("ConfigValue"));
+        }
+        [Test]
+        public void IfCacheSpecifiedInProperty_CanWriteAndTryGetConfigValue()
+        {
+            CacheableConfigController sut = new CacheableConfigController();
+
+            sut.Cache = new ConfigCache();
+            Queue<string> priority = new Queue<string>();
+            priority.Enqueue("FirstPlane");
+
+
+            sut.Priority = priority;
+
+            sut.UpsertDefaultConfigValue("FirstPlane", "ConfigKey", "ConfigValue");
+            Dictionary<string, string> context = new Dictionary<string, string>();
+            context.Add("FirstPlane", "MyConfigContext");
+            sut.SearchContext = context;
+
+            string result;
+            Assert.IsTrue(sut.TryGetConfigValue("ConfigKey", out result));
+ 
             Assert.That(result.Equals("ConfigValue"));
         }
         [Test]
@@ -178,6 +200,31 @@ namespace HConfigTests
             sut.UpsertDefaultConfigValue("FirstPlane", "ConfigKey", "ConfigValue");
 
             configCache.AssertWasCalled(x => x.ClearCache());
+        }
+
+        [Test]
+        public void GetCache_ReturnCurrentCache()
+        {
+            IConfigCache configCache = MockRepository.GenerateStub<IConfigCache>();
+            configCache.Stub(x => x.GetCachedValue("MyCachedConfigKey")).Return("MyCachedConfigValue");
+            CacheableConfigController sut = new CacheableConfigController();
+            sut.Cache = configCache;
+
+            Queue<string> priority = new Queue<string>();
+            priority.Enqueue("FirstPlane");
+
+
+            sut.Priority = priority;
+
+            sut.UpsertDefaultConfigValue("FirstPlane", "ConfigKey", "ConfigValue");
+            Dictionary<string, string> context = new Dictionary<string, string>();
+            context.Add("FirstPlane", "MyConfigContext");
+            sut.SearchContext = context;
+
+            sut.GetConfigValue("ConfigKey");
+            string result = sut.GetConfigValue("MyCachedConfigKey");
+            IConfigCache cache = sut.Cache;
+            Assert.IsNotNull(cache);
         }
     }
 }

@@ -106,7 +106,7 @@ namespace HConfigTests
 
     }
 
-    internal class ConfigCacheTestHelper : ConfigCache
+    public class ConfigCacheTestHelper : ConfigCache
     {
         public int GetCacheLength()
         {
