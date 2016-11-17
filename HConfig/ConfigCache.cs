@@ -6,7 +6,7 @@ namespace HConfig
 {
     public class ConfigCache : IConfigCache
     {
-        private readonly Dictionary<string,string> _cache ;
+        protected readonly Dictionary<string,string> _cache ;
 
         public ConfigCache()
         {

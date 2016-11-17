@@ -76,6 +76,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="CachedConfigControllerTests.cs" />
+    <Compile Include="ConfigCacheTests.cs" />
     <Compile Include="ConfigControllerTests.cs" />
     <Compile Include="ConfigPlaneTests.cs" />
     <Compile Include="ConfigContextTests.cs" />

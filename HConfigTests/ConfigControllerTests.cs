@@ -134,22 +134,7 @@ namespace HConfigTests
         [Test]
         public void WithSinglePlaneUpsertDefaultConfigValue_GetValueIsReadCorrectly()
         {
-            ConfigControllerTestHelper sut = new ConfigControllerTestHelper();
 
-            Queue<string> priority = new Queue<string>();
-            priority.Enqueue("FirstPlane");
-
-
-            sut.Priority = priority;
-
-            sut.UpsertDefaultConfigValue("FirstPlane", "ConfigKey", "ConfigValue");
-            Dictionary<string, string> context = new Dictionary<string, string>();
-            context.Add("FirstPlane", "MyConfigContext");
-            sut.SearchContext = context;
-
-            string result = sut.GetConfigValue("ConfigKey");
-            Assert.NotNull(result);
-            Assert.That(result.Equals("ConfigValue"));
 
 
         }
